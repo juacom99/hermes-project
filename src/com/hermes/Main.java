@@ -8,6 +8,7 @@ package com.hermes;
 import com.hermes.client.HCUser;
 import com.hermes.client.HClient;
 import com.hermes.client.events.HClientAvatarEvent;
+import com.hermes.client.events.HClientEmoteEvent;
 import com.hermes.client.events.HClientJoinEvent;
 import com.hermes.client.events.HClientMessageEvent;
 import com.hermes.client.events.HClientNoSuchEvent;
@@ -94,9 +95,11 @@ public class Main
                 
             }
 
-           
-
-            
+            @Override
+            public void onEmote(HClientEmoteEvent evt)
+            {
+                System.out.println("* "+evt.getUsername()+" "+evt.getEmote() );
+            }
         };
         c.addClientEventListener(e);
         c.connect(ch.getPublicIP(), ch.getPort());

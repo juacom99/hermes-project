@@ -19,6 +19,7 @@
 package com.hermes.client;
 
 import com.hermes.client.events.HClientAvatarEvent;
+import com.hermes.client.events.HClientEmoteEvent;
 import com.hermes.client.events.HClientEvent;
 import com.hermes.client.events.HClientJoinEvent;
 import com.hermes.client.events.HClientMessageEvent;
@@ -257,6 +258,13 @@ public class HClient implements Runnable, ActionListener
                                             events.get(i).onPublicMessage((HClientMessageEvent) evt);
                                         }
                                         break;
+                                    case 11:
+                                         evt = new HClientEmoteEvent(((com.hermes.server.packages.tcp.P11) p).getUsername(), ((com.hermes.server.packages.tcp.P11) p).getText());
+                                        for (int i = 0; i < events.size(); i++)
+                                        {
+                                            events.get(i).onEmote((HClientEmoteEvent) evt);
+                                        }
+                                        break;
                                     case 13:
                                         com.hermes.server.packages.tcp.P13 pkg = ((com.hermes.server.packages.tcp.P13) p);
                                         HUser target = channel.find(pkg.getUsername());
@@ -266,7 +274,7 @@ public class HClient implements Runnable, ActionListener
                                              evt=new HClientPersonalMessageEvent(pkg.getUsername(),pkg.getPersonalMessage());
                                             for (int i = 0; i < events.size(); i++)
                                             {
-                                                events.get(i).onAvatar((HClientAvatarEvent)evt);
+                                                events.get(i).onPersonalMessage((HClientPersonalMessageEvent)evt);
                                             }
                                         }
                                         break;

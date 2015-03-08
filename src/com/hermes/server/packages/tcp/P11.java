@@ -15,29 +15,38 @@ import java.nio.ByteBuffer;
 public class P11 extends HPackage
 {
 
-    private String sender;
+    private String username;
     private String text;
 
-    public P11(String sender, String text)
+    public P11(String username, String text)
     {
         super(11);
-        this.sender = sender;
+        this.username = username;
         this.text = text;
     }
 
     public P11(ByteBuffer bb)
     {
         super(11);
-        this.sender=readNullTerminatedString(bb);
+        this.username=readNullTerminatedString(bb);
         this.text=readNullTerminatedString(bb);
     }
 
     @Override
     public String toString()
     {
-        return this.sender+" "+this.text;
+        return this.username+" "+this.text;
     }
-    
+
+    public String getUsername()
+    {
+        return username;
+    }
+
+    public String getText()
+    {
+        return text;
+    }     
     
     @Override
     public ByteBuffer getPayload()

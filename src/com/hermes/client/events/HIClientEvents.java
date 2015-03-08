@@ -25,22 +25,7 @@ public interface HIClientEvents
     public void onPersonalMessage(HClientPersonalMessageEvent evt);
     
      public void onAvatar(HClientAvatarEvent evt);
-    /*public void onNewEmote(HClientEmoteEvent evt);
-    
-    public void onNewPrivateMessage(HClientPrivateMessage evt);
-    
-    public void onAvatarChanged(HClientAvatarChanged evt);
-    
-    public void onNewTopic(HClientTopicEvent evt);
-    
-     public void onUserJoin(HClientUserJoinEvent evt);
      
-     public void onUserPart(HClientUserPartEvent evt);
-     
-     public void onPersonalMessageChanged(HClientPersonalMessageChanged evt);
-     
-     public void onNoSuch(HClientNoSuch evt);
-     
-     //TODO: REMOVE
-      public void onPackage(HPackage p);*/
+    public void onEmote(HClientEmoteEvent evt);
+    
 }
