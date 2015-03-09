@@ -68,7 +68,7 @@ public class HClient implements Runnable, ActionListener
     private Thread reader;
     private ByteBuffer readBuffer;
     private SocketChannel socket;
-    private static final int BUFFER_SIZE = 2048;
+    private static final int BUFFER_SIZE = 3072;
     private List<HIClientEvents> events;
     private Timer updateTimer;
 

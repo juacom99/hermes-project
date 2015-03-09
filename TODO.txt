@@ -1,0 +1,3 @@
+* Add support to custom packages (id 250)
+* Create a Dispach rutine for the client
+* Create Dispachers for every package incoming from the server
