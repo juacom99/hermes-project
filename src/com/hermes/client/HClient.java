@@ -326,6 +326,10 @@ public class HClient implements Runnable, ActionListener
                                             events.get(i).onNoSuch((HClientNoSuchEvent) evt);
                                         }
                                         break;
+                                    case 73:
+                                         com.hermes.server.packages.tcp.P73 pkga = ((com.hermes.server.packages.tcp.P73) p);
+                                         this.channel.setUlr(pkga.getUrl(),pkga.getCaption());
+                                        break;
 
                                 }
                             }

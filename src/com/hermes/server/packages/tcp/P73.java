@@ -43,6 +43,16 @@ public class P73 extends HPackage
         return null;
     }
 
+    public String getUrl()
+    {
+        return url;
+    }
+
+    public String getCaption()
+    {
+        return caption;
+    }
+    
     @Override
     public String toString()
     {

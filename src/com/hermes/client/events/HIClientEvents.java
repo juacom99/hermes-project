@@ -28,4 +28,6 @@ public interface HIClientEvents
      
     public void onEmote(HClientEmoteEvent evt);
     
+    
+    public void onURL(HClientUrlEvent evt);
 }

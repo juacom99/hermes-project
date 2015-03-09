@@ -22,7 +22,8 @@ public class HChannel
     private InetAddress privateIP;
     private String topic;
     private List<HUser> users;
-
+    private String url;
+    private String urlCaption;
  
     
     
@@ -93,6 +94,14 @@ public class HChannel
         }
         return ret;
     }
+
+    public void setUlr(String url,String urlCaption)
+    {
+        this.url = url;
+        this.urlCaption=urlCaption;
+    }
+     
+     
      
      public void removeUser(HUser user)
      {
