@@ -26,6 +26,7 @@ import com.hermes.client.events.HClientMessageEvent;
 import com.hermes.client.events.HClientNoSuchEvent;
 import com.hermes.client.events.HClientPartEvent;
 import com.hermes.client.events.HClientPersonalMessageEvent;
+import com.hermes.client.events.HClientUrlEvent;
 import com.hermes.client.events.HIClientEvents;
 import com.hermes.common.packages.tcp.HPackage;
 import com.hermes.client.packages.tcp.P10;
@@ -329,6 +330,11 @@ public class HClient implements Runnable, ActionListener
                                     case 73:
                                          com.hermes.server.packages.tcp.P73 pkga = ((com.hermes.server.packages.tcp.P73) p);
                                          this.channel.setUlr(pkga.getUrl(),pkga.getCaption());
+                                         evt=new HClientUrlEvent(pkga.getUrl(),pkga.getCaption());
+                                         for (int i = 0; i < events.size(); i++)
+                                        {
+                                            events.get(i).onURL((HClientUrlEvent) evt);
+                                        }
                                         break;
 
                                 }
