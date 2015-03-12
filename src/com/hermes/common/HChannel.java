@@ -37,6 +37,13 @@ public class HChannel
         this.users = new ArrayList<HUser>();
     }
 
+    public HChannel(InetAddress publicIP, int port)
+    {
+        this.publicIP=publicIP;
+        this.port=port;
+    }
+
+    
     public String getName()
     {
         return name;
