@@ -14,7 +14,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  *
@@ -70,9 +70,9 @@ public class IPCacheManager
         outputStream.flush();
     }
 
-    public ArrayList<HChannel> read() throws FileNotFoundException, IOException
+    public LinkedList<HChannel> read() throws FileNotFoundException, IOException
     {
-        ArrayList<HChannel> channels = new ArrayList<HChannel>();
+        LinkedList<HChannel> channels = new LinkedList<HChannel>();
 
         InputStream is = new FileInputStream(file);
         is.skip(6);

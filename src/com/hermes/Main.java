@@ -5,6 +5,7 @@
  */
 package com.hermes;
 
+import com.hermes.client.HCChannelDownloader;
 import com.hermes.client.HCUser;
 import com.hermes.client.HClient;
 import com.hermes.client.events.HClientAvatarEvent;
@@ -14,6 +15,7 @@ import com.hermes.client.events.HClientMessageEvent;
 import com.hermes.client.events.HClientNoSuchEvent;
 import com.hermes.client.events.HClientPartEvent;
 import com.hermes.client.events.HClientPersonalMessageEvent;
+import com.hermes.client.events.HClientUrlEvent;
 import com.hermes.client.events.HIClientEvents;
 import com.hermes.common.HChannel;
 import com.hermes.common.HHash;
@@ -21,11 +23,13 @@ import com.hermes.common.constants.HBrowsable;
 import com.hermes.common.constants.HGender;
 import com.hermes.common.constants.HLineType;
 import com.hermes.common.constants.HLocation;
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.UUID;
 import javax.swing.ImageIcon;
 
 
@@ -39,7 +43,7 @@ public class Main
     public static void main(String[] args) throws UnknownHostException, IOException, Exception
     {
 
-        HChannel ch = HHash.getInstance().decode("arlnk://F5fPZROCs4iuoc9Jm55Z7TJcWKNJr6o6WdBdjFSxrsF+ZiRNarY9AYf5qfppVpRFuUM4Wscn");
+        HChannel ch = HHash.getInstance().decode("arlnk://CHATROOM:127.0.0.1:5000|Test");
 
         System.out.println("Connecting to: " + ch.getName() + " " + ch.getPublicIP().getHostAddress() + ":" + ((int) ch.getPort()) + "  " + ch.getTopic()+" on "+new Date());
 
@@ -100,12 +104,20 @@ public class Main
             {
                 System.out.println("* "+evt.getUsername()+" "+evt.getEmote() );
             }
+
+            @Override
+            public void onURL(HClientUrlEvent evt)
+            {
+                //System.out.println("URL: "+evt.getUrlCaption()+"["+evt.getUrl()+"]");
+            }
         };
         c.addClientEventListener(e);
+
         c.connect(ch.getPublicIP(), ch.getPort());
         Scanner in = new Scanner(System.in);
         String line;
-        while (true)
+        boolean conected=true;
+        while (conected)
         {
             line = in.nextLine();
             if (line != null && !line.isEmpty())
@@ -150,5 +162,11 @@ public class Main
                 }
             }
         }
+        
+       HCChannelDownloader cd=new HCChannelDownloader(new File("./ChatroomIPs.dat"));
+        cd.start();
+        
     }
+    
+   
 }
