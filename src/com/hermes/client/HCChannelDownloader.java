@@ -7,15 +7,22 @@ package com.hermes.client;
 
 import com.hermes.common.HChannel;
 import com.hermes.common.IPCacheManager;
+import com.hermes.common.packages.tcp.HPackage;
+import com.hermes.server.packages.udp.D3;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
+import java.net.PortUnreachableException;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,54 +45,169 @@ public class HCChannelDownloader implements Runnable
 
         manager = new IPCacheManager(cacheFile);
         toProcess = manager.read();
-        downloadThread=new Thread(this);
+        channels = new ArrayList<HChannel>();
+        downloadThread = new Thread(this);
     }
 
-    
     public void start()
     {
-        if(!downloadThread.isAlive())
+        if (!downloadThread.isAlive())
         {
             downloadThread.start();
         }
     }
+
     @Override
     public void run()
     {
-        try
-        {
-            HChannel channel;
-            
-            int i;
+        
+            HChannel channel, temp;
 
             byte[] b =
             {
                 2
             };
-            DatagramPacket pack = new DatagramPacket(b, b.length);
-            DatagramSocket sock = new DatagramSocket();
+            DatagramPacket pack;
+            DatagramSocket sock;
 
             byte[] bRes = new byte[1024];
             DatagramPacket res = new DatagramPacket(bRes, bRes.length);
 
-            sock.setSoTimeout(800);
+            int id;
+            HPackage p;
+            Iterator<HChannel> i;
 
             while (!toProcess.isEmpty())
             {
-                channel = toProcess.poll();
-                sock.connect(new InetSocketAddress(channel.getPublicIP(),channel.getPort()));
-                sock.send(pack);
-                sock.receive(res);
-                ByteBuffer bb = ByteBuffer.wrap(res.getData());
-                bb.order(ByteOrder.LITTLE_ENDIAN);
+                try
+                {
+                    pack = new DatagramPacket(b, b.length);
+                    sock = new DatagramSocket();
+                    sock.setSoTimeout(800);
+
+                    channel = toProcess.poll();
+
+                    sock.connect(new InetSocketAddress(channel.getPublicIP(), channel.getPort()));
+                    sock.send(pack);
+                    sock.receive(res);
+                    sock.disconnect();
+                    ByteBuffer bb = ByteBuffer.wrap(res.getData());
+                    bb.order(ByteOrder.LITTLE_ENDIAN);
+                    id = (bb.get() & 0xFF);
+                    p = deserialize(id, bb);
+
+                    //TODO: change to dispacher
+                    switch (p.getId())
+                    {
+                        case 3:
+                            D3 d = ((D3) p);
+
+                            toProcess.remove(channel);
+                            channel.setName(d.getName());
+                            channel.setTopic(d.getTopic());
+                            channel.setPort(d.getPort());
+                            channel.setLanguage(d.getLanguage());
+                            channel.setServerVersion(d.getServerVersion());
+                            channel.setUserCount(d.getUserCount());
+
+                            channels.add(channel);
+                            
+                            System.out.println(channel.getName()+" Added");
+                            i = d.getKnownChannels().iterator();
+
+                            while (i.hasNext())
+                            {
+                                temp = i.next();
+
+                                if (!(toProcess.contains(temp) || channels.contains(temp)))
+                                {
+                                    toProcess.add(temp);
+                                }
+                            }
+                            break;
+                    }
+
+                    sock.close();
+                } catch (SocketTimeoutException ex)
+                {
+
+                }
+                catch(PortUnreachableException ex)
+                {
+                    
+                }
+                catch(IOException ex)
+                {
+                    
+                }
+
             }
-        } catch (SocketException ex)
+            System.out.println(channels.size()+" Downloaded");
+
+        
+    }
+
+    private HPackage deserialize(int id, ByteBuffer payload)
+    {
+        Class<?> clazz = null;
+        HPackage p = null;
+        try
         {
-            Logger.getLogger(HCChannelDownloader.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex)
+            clazz = Class.forName("com.hermes.server.packages.udp.D" + id);
+
+        } catch (ClassNotFoundException ex)
         {
-            Logger.getLogger(HCChannelDownloader.class.getName()).log(Level.SEVERE, null, ex);
+            try
+            {
+                clazz = Class.forName("com.hermes.server.packages.udp.PDefault");
+
+            } catch (ClassNotFoundException ex1)
+            {
+                Logger.getLogger(HClient.class
+                        .getName()).log(Level.SEVERE, null, ex1);
+            }
+
         }
+
+        if (clazz != null)
+        {
+            Constructor<?> constr;
+
+            try
+            {
+                constr = clazz.getConstructor(ByteBuffer.class
+                );
+                p = (HPackage) constr.newInstance(payload);
+            } catch (NoSuchMethodException ex)
+            {
+                Logger.getLogger(HClient.class
+                        .getName()).log(Level.SEVERE, null, id + " " + ex);
+            } catch (SecurityException ex)
+            {
+                Logger.getLogger(HClient.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            } catch (InstantiationException ex)
+            {
+                Logger.getLogger(HClient.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            } catch (IllegalAccessException ex)
+            {
+                Logger.getLogger(HClient.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            } catch (IllegalArgumentException ex)
+            {
+                Logger.getLogger(HClient.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            } catch (InvocationTargetException ex)
+            {
+                Logger.getLogger(HClient.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+
+        return p;
+
     }
 
 }

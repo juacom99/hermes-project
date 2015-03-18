@@ -377,8 +377,7 @@ public class HClient implements Runnable, ActionListener
 
     }
 
-    //TODO:Change back to private
-    public HPackage deserialize(int id, ByteBuffer payload)
+    private HPackage deserialize(int id, ByteBuffer payload)
     {
         Class<?> clazz = null;
         HPackage p = null;

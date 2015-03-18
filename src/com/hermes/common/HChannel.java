@@ -5,6 +5,7 @@
  */
 package com.hermes.common;
 
+import com.hermes.common.constants.HLanguage;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,6 +25,10 @@ public class HChannel
     private List<HUser> users;
     private String url;
     private String urlCaption;
+    private HLanguage language;
+    private int userCount;
+    private String serverVersion;
+    
  
     
     
@@ -107,6 +112,36 @@ public class HChannel
         this.url = url;
         this.urlCaption=urlCaption;
     }
+
+    public void setPort(int port)
+    {
+        this.port = port;
+    }
+
+    public void setUrl(String url)
+    {
+        this.url = url;
+    }
+
+    public void setUrlCaption(String urlCaption)
+    {
+        this.urlCaption = urlCaption;
+    }
+
+    public void setLanguage(HLanguage language)
+    {
+        this.language = language;
+    }
+
+    public void setUserCount(int userCount)
+    {
+        this.userCount = userCount;
+    }
+
+    public void setServerVersion(String serverVersion)
+    {
+        this.serverVersion = serverVersion;
+    }
      
      
      
@@ -117,4 +152,12 @@ public class HChannel
              users.remove(user);
          }
      }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        return ((HChannel)obj).publicIP.equals(this.publicIP) && ((HChannel)obj).port==this.port;
+    }
+     
+     
 }
