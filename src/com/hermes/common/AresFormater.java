@@ -22,7 +22,7 @@ public class AresFormater
     public static final char UNDERLINE_CHARACTER = ((char) 7);
     private static final String[] COLORS =
     {
-        "#ffffff", "#000000", "#000080", "#008000", "#ff0000", "#800000", "#800080", "#ff8000", "#ffff00", "#00ff00", "#008080", "#00ffff", "#0000ff", "#ff00ff", "#808080", "#c0c0c0"
+        "#f8f8f8", "#000000", "#000080", "#008000", "#ff0000", "#800000", "#800080", "#ff8000", "#ffff00", "#00ff00", "#008080", "#00ffff", "#0000ff", "#ff00ff", "#808080", "#bfbfbf"
     };
 
     private static AresFormater instance;
@@ -38,15 +38,14 @@ public class AresFormater
         String ret = foregroundReplace(s);
         ret = backGrounddReplace(ret);
         ret = specialHTMLReplace(ret);
-
+        ret= boldReplace(ret);
         return ret;
     }
 
     public String backGrounddReplace(String str)
     {
-        char bgchar = ((char) 5);
         //replace foreground
-        Pattern pattern = Pattern.compile(bgchar + "(\\d{2})((\\w*))");
+        Pattern pattern = Pattern.compile(BACKGROUND_CHARACTER + "(\\d{2})((\\w*))");
         Matcher matcher = pattern.matcher(str);
         StringBuffer sb = new StringBuffer();
 
@@ -66,10 +65,9 @@ public class AresFormater
 
     public String foregroundReplace(String str)
     {
-        char fgchar = ((char) 3);
         //replace foreground
 
-        Pattern pattern = Pattern.compile(fgchar + "(\\d{2})((\\w*))");
+        Pattern pattern = Pattern.compile(FOREGROUND_CHARACTER + "(\\d{2})((\\w*))");
         Matcher matcher = pattern.matcher(str);
         StringBuffer sb = new StringBuffer();
 
@@ -86,6 +84,35 @@ public class AresFormater
         return sb.toString();
     }
 
+     public String boldReplace(String str)
+    {
+        
+        str=str.replaceAll(((char)2)+"6",""+BOLD_CHARACTER);
+        
+        Pattern pattern = Pattern.compile(BOLD_CHARACTER +"((\\w*)?)["+BOLD_CHARACTER+" $]");
+        Matcher matcher = pattern.matcher(str);
+        StringBuffer sb = new StringBuffer();
+
+        String color;
+        String text;
+
+        int count=0;
+        
+        while (matcher.find())
+        {
+            text = matcher.group(2);
+            
+                matcher.appendReplacement(sb,"<b>"+text+"<b/>");
+       }
+        
+        if(count%2!=0)
+        {
+            matcher.appendReplacement(sb, "</b>");
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+     
     public String specialHTMLReplace(String str)
     {
 
