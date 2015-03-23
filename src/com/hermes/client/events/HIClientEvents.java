@@ -27,7 +27,14 @@ public interface HIClientEvents
      public void onAvatar(HClientAvatarEvent evt);
      
     public void onEmote(HClientEmoteEvent evt);
-    
-    
+        
     public void onURL(HClientUrlEvent evt);
+    
+    public void onTopic(HClientTopicEvent evt);
+    
+    public void onUserList(HClientUserListevent evt);
+    
+    public void onConnect(HClientEvent evt);
+    
+    public void onDisconnect(HClientEvent evt);
 }

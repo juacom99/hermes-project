@@ -44,6 +44,7 @@ public class HChannel
 
     public HChannel(InetAddress publicIP, int port)
     {
+        this.name="Channel";
         this.publicIP=publicIP;
         this.port=port;
     }

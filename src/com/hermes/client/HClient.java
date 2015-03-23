@@ -26,7 +26,9 @@ import com.hermes.client.events.HClientMessageEvent;
 import com.hermes.client.events.HClientNoSuchEvent;
 import com.hermes.client.events.HClientPartEvent;
 import com.hermes.client.events.HClientPersonalMessageEvent;
+import com.hermes.client.events.HClientTopicEvent;
 import com.hermes.client.events.HClientUrlEvent;
+import com.hermes.client.events.HClientUserListevent;
 import com.hermes.client.events.HIClientEvents;
 import com.hermes.common.packages.tcp.HPackage;
 import com.hermes.client.packages.tcp.P10;
@@ -71,8 +73,9 @@ public class HClient implements Runnable, ActionListener
     private static final int BUFFER_SIZE = 3072;
     private List<HIClientEvents> events;
     private Timer updateTimer;
+    private boolean running;
 
-    public static final String CLIENT_VERSION = "нεямεѕ сℓιεит 0.1";
+    public static final String CLIENT_VERSION = "Ares 2.1.5.24";// "нεямεѕ сℓιεит 0.1";
 
     public HClient(HCUser user) throws IOException
     {
@@ -80,6 +83,7 @@ public class HClient implements Runnable, ActionListener
         this.reader = new Thread(this);
         this.events = new ArrayList<>();
         this.updateTimer = new Timer(80000, this);
+        this.running=false;
     }
 
     public void connect(InetAddress ip, int port) throws IOException, Exception
@@ -97,30 +101,45 @@ public class HClient implements Runnable, ActionListener
             socket.connect(addr);
             socket.configureBlocking(true);
             /*while (!socket.finishConnect())
-            {
+             {
 
-            }*/
+             }*/
+            running=true;
             reader.start();
-
+            for (int i = 0; i < events.size(); i++)
+            {
+                events.get(i).onConnect(new HClientEvent());
+            }
             P2 pkg = new P2(user.getGuid(), (short) user.getFilecount(), (short) user.getDataport(), user.getNodeIp(), (short) user.getNodePort(), user.getLinetype(), user.getUsername(), CLIENT_VERSION, user.getPrivateIp(), user.getPublicIp(), user.getBrowsable(), user.getUploads(), user.getMaxUploads(), user.getQueued(), user.getAge(), user.getGender(), user.getCountryCode(), user.getRegion());
             send(pkg);
             sendAvatar();
             updateTimer.start();
 
-        }
-        catch (IOException ex)
+        } catch (IOException ex)
         {
             Logger.getLogger(HClient.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
+    
+    public void disconnect() throws IOException
+    {
+        running=false;
+        updateTimer.stop();
+        socket.close();
+        for (int i = 0; i < events.size(); i++)
+        {
+           events.get(i).onDisconnect(new HClientEvent());
+        }      
+        
+    }
+    
     public void send(HPackage pkg)
     {
         try
         {
             socket.write(HPackageSerializer.getInstance().getBytes(pkg));
-        }
-        catch (IOException ex)
+        } catch (IOException ex)
         {
             System.err.println(ex.getMessage());
         }
@@ -153,8 +172,11 @@ public class HClient implements Runnable, ActionListener
 
     public void sendAvatar()
     {
-        P9 pkg = new P9(user.getAvatar());
-        send(pkg);
+        if (user.getAvatar() != null)
+        {
+            P9 pkg = new P9(user.getAvatar());
+            send(pkg);
+        }
     }
 
     public void addClientEventListener(HIClientEvents e)
@@ -191,12 +213,12 @@ public class HClient implements Runnable, ActionListener
         ByteBuffer payload;
         HPackage p;
         int payloadLeft = 0;
-        byte hi,low;
+        byte hi, low;
 
         try
         {
 
-            while (socket.isConnected())
+            while (running)
             {
                 readed = socket.read(readBuffer);
 
@@ -210,10 +232,10 @@ public class HClient implements Runnable, ActionListener
 
                         if (payloadLeft == 0)
                         {
-                           hi=readBuffer.get();
-                           low=readBuffer.get();
-            
-                            payloadLength = ( ((low&0xFF)<<8) | (hi&0xFF) ); 
+                            hi = readBuffer.get();
+                            low = readBuffer.get();
+
+                            payloadLength = (((low & 0xFF) << 8) | (hi & 0xFF));
                             payloadLeft = payloadLength;
                             id = (short) (readBuffer.get() & 0x00ff);
 
@@ -244,10 +266,10 @@ public class HClient implements Runnable, ActionListener
                                         if (t != null)
                                         {
                                             t.setAvatar(pg.getAvatar());
-                                            evt=new HClientAvatarEvent(pg.getUsername(),pg.getAvatar());
+                                            evt = new HClientAvatarEvent(pg.getUsername(), pg.getAvatar());
                                             for (int i = 0; i < events.size(); i++)
                                             {
-                                                events.get(i).onAvatar((HClientAvatarEvent)evt);
+                                                events.get(i).onAvatar((HClientAvatarEvent) evt);
                                             }
                                         }
                                         break;
@@ -260,7 +282,7 @@ public class HClient implements Runnable, ActionListener
                                         }
                                         break;
                                     case 11:
-                                         evt = new HClientEmoteEvent(((com.hermes.server.packages.tcp.P11) p).getUsername(), ((com.hermes.server.packages.tcp.P11) p).getText());
+                                        evt = new HClientEmoteEvent(((com.hermes.server.packages.tcp.P11) p).getUsername(), ((com.hermes.server.packages.tcp.P11) p).getText());
                                         for (int i = 0; i < events.size(); i++)
                                         {
                                             events.get(i).onEmote((HClientEmoteEvent) evt);
@@ -272,10 +294,10 @@ public class HClient implements Runnable, ActionListener
                                         if (target != null)
                                         {
                                             target.setPersonalMessage(pkg.getPersonalMessage());
-                                             evt=new HClientPersonalMessageEvent(pkg.getUsername(),pkg.getPersonalMessage());
+                                            evt = new HClientPersonalMessageEvent(pkg.getUsername(), pkg.getPersonalMessage());
                                             for (int i = 0; i < events.size(); i++)
                                             {
-                                                events.get(i).onPersonalMessage((HClientPersonalMessageEvent)evt);
+                                                events.get(i).onPersonalMessage((HClientPersonalMessageEvent) evt);
                                             }
                                         }
                                         break;
@@ -313,12 +335,22 @@ public class HClient implements Runnable, ActionListener
                                         break;
                                     case 30:
                                         com.hermes.server.packages.tcp.P30 pk = ((com.hermes.server.packages.tcp.P30) p);
-                                        HCUser u = new HCUser(pk.getUsername(), "",  pk.getSharecount(), pk.getLinetype(), pk.getBrowsable(), pk.getAge(), pk.getGender(), pk.getCountry(), pk.getRegion(), pk.getPublicIp(), pk.getPublicPort(), pk.getPrivateIp(), pk.getNodeIp(), pk.getNodePort(), (byte) 0, (byte) 0, (byte) 0);
+                                        HCUser u = new HCUser(pk.getUsername(), "", pk.getSharecount(), pk.getLinetype(), pk.getBrowsable(), pk.getAge(), pk.getGender(), pk.getCountry(), pk.getRegion(), pk.getPublicIp(), pk.getPublicPort(), pk.getPrivateIp(), pk.getNodeIp(), pk.getNodePort(), (byte) 0, (byte) 0, (byte) 0);
+                                        evt = new HClientUserListevent(u);
                                         channel.addUser(u);
-                                        System.out.println(u);
+                                        for (int i = 0; i < events.size(); i++)
+                                        {
+                                            events.get(i).onUserList((HClientUserListevent) evt);
+                                        }
+
                                         break;
                                     case 32:
                                         channel.setTopic(((com.hermes.server.packages.tcp.P32) p).getTopic());
+                                        evt = new HClientTopicEvent(channel.getTopic());
+                                        for (int i = 0; i < events.size(); i++)
+                                        {
+                                            events.get(i).onTopic((HClientTopicEvent) evt);
+                                        }
                                         break;
                                     case 44:
                                         evt = new HClientNoSuchEvent(((com.hermes.server.packages.tcp.P44) p).getMessage());
@@ -328,25 +360,23 @@ public class HClient implements Runnable, ActionListener
                                         }
                                         break;
                                     case 73:
-                                         com.hermes.server.packages.tcp.P73 pkga = ((com.hermes.server.packages.tcp.P73) p);
-                                         this.channel.setUlr(pkga.getUrl(),pkga.getCaption());
-                                         evt=new HClientUrlEvent(pkga.getUrl(),pkga.getCaption());
-                                         for (int i = 0; i < events.size(); i++)
+                                        com.hermes.server.packages.tcp.P73 pkga = ((com.hermes.server.packages.tcp.P73) p);
+                                        this.channel.setUlr(pkga.getUrl(), pkga.getCaption());
+                                        evt = new HClientUrlEvent(pkga.getUrl(), pkga.getCaption());
+                                        for (int i = 0; i < events.size(); i++)
                                         {
                                             events.get(i).onURL((HClientUrlEvent) evt);
                                         }
                                         break;
 
                                 }
-                            }
-                            catch (Exception ex)
+                            } catch (Exception ex)
                             {
                                 int i = 0;
                             }
                             payloadLeft = 0;
 
-                        }
-                        else
+                        } else
                         {
 
                             payloadLeft = payloadLeft - readBuffer.remaining();
@@ -354,23 +384,18 @@ public class HClient implements Runnable, ActionListener
                         }
                     }
                     readBuffer.compact();
-                }
-                else
+                } else
                 {
-                    updateTimer.stop();
-                    socket.close();
+                  disconnect();
                     //TODO clean UP;
                     payload = null;
                     payloadLeft = 0;
                     payloadLength = 0;
                     id = 0;
                     bPayload = null;
-                    System.out.println(new Date() + " Disconnected");
-
                 }
             }
-        }
-        catch (IOException ex)
+        } catch (IOException ex)
         {
             Logger.getLogger(HClient.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -385,15 +410,13 @@ public class HClient implements Runnable, ActionListener
         {
             clazz = Class.forName("com.hermes.server.packages.tcp.P" + id);
 
-        }
-        catch (ClassNotFoundException ex)
+        } catch (ClassNotFoundException ex)
         {
             try
             {
                 clazz = Class.forName("com.hermes.server.packages.tcp.PDefault");
 
-            }
-            catch (ClassNotFoundException ex1)
+            } catch (ClassNotFoundException ex1)
             {
                 Logger.getLogger(HClient.class
                         .getName()).log(Level.SEVERE, null, ex1);
@@ -410,33 +433,27 @@ public class HClient implements Runnable, ActionListener
                 constr = clazz.getConstructor(ByteBuffer.class
                 );
                 p = (HPackage) constr.newInstance(payload);
-            }
-            catch (NoSuchMethodException ex)
+            } catch (NoSuchMethodException ex)
             {
                 Logger.getLogger(HClient.class
                         .getName()).log(Level.SEVERE, null, id + " " + ex);
-            }
-            catch (SecurityException ex)
+            } catch (SecurityException ex)
             {
                 Logger.getLogger(HClient.class
                         .getName()).log(Level.SEVERE, null, ex);
-            }
-            catch (InstantiationException ex)
+            } catch (InstantiationException ex)
             {
                 Logger.getLogger(HClient.class
                         .getName()).log(Level.SEVERE, null, ex);
-            }
-            catch (IllegalAccessException ex)
+            } catch (IllegalAccessException ex)
             {
                 Logger.getLogger(HClient.class
                         .getName()).log(Level.SEVERE, null, ex);
-            }
-            catch (IllegalArgumentException ex)
+            } catch (IllegalArgumentException ex)
             {
                 Logger.getLogger(HClient.class
                         .getName()).log(Level.SEVERE, null, ex);
-            }
-            catch (InvocationTargetException ex)
+            } catch (InvocationTargetException ex)
             {
                 Logger.getLogger(HClient.class
                         .getName()).log(Level.SEVERE, null, ex);
