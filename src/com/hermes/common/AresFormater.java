@@ -89,7 +89,8 @@ public class AresFormater
         
         str=str.replaceAll(((char)2)+"6",""+BOLD_CHARACTER);
         
-        Pattern pattern = Pattern.compile(BOLD_CHARACTER +"((\\w*)?)["+BOLD_CHARACTER+" $]");
+        String s="("+BOLD_CHARACTER +"((\\w*)?)"+BOLD_CHARACTER+")|("+BOLD_CHARACTER +"((\\w*)?)$)";
+        Pattern pattern = Pattern.compile(s);
         Matcher matcher = pattern.matcher(str);
         StringBuffer sb = new StringBuffer();
 
@@ -100,15 +101,11 @@ public class AresFormater
         
         while (matcher.find())
         {
-            text = matcher.group(2);
+            text = matcher.group(0);
             
-                matcher.appendReplacement(sb,"<b>"+text+"<b/>");
+                matcher.appendReplacement(sb,"<b>"+text+"</b>");
        }
-        
-        if(count%2!=0)
-        {
-            matcher.appendReplacement(sb, "</b>");
-        }
+       
         matcher.appendTail(sb);
         return sb.toString();
     }
