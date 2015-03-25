@@ -89,6 +89,7 @@ public class AresFormater
      public String boldReplace(String str)
     {
        
+        str= str.replaceAll("6",""+BOLD_CHARACTER);
         String s="("+BOLD_CHARACTER +"((\\w*)?)"+BOLD_CHARACTER+")|("+BOLD_CHARACTER +"((\\w*)?)$)";
         Pattern pattern = Pattern.compile(s);
         Matcher matcher = pattern.matcher(str);
@@ -112,7 +113,7 @@ public class AresFormater
      
       public String underlineReplace(String str)
     {
-        
+        str= str.replaceAll("7",""+UNDERLINE_CHARACTER);
         String s="("+UNDERLINE_CHARACTER +"((\\w*)?)"+UNDERLINE_CHARACTER+")|("+UNDERLINE_CHARACTER +"((\\w*)?)$)";
         Pattern pattern = Pattern.compile(s);
         Matcher matcher = pattern.matcher(str);
@@ -135,7 +136,8 @@ public class AresFormater
     }
       
        public String italicReplace(String str)
-    {     
+    {    
+        str= str.replaceAll("9",""+ITALIC_CHARACTER);
         String s="("+ITALIC_CHARACTER +"((\\w*)?)"+ITALIC_CHARACTER+")|("+ITALIC_CHARACTER +"((\\w*)?)$)";
         Pattern pattern = Pattern.compile(s);
         Matcher matcher = pattern.matcher(str);
