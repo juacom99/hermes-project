@@ -75,7 +75,7 @@ public class HClient implements Runnable, ActionListener
     private Timer updateTimer;
     private boolean running;
 
-    public static final String CLIENT_VERSION = "Ares 2.1.5.24";// "нεямεѕ сℓιεит 0.1";
+    public static final String CLIENT_VERSION = "Ares 2.1.9.9.9";//нεямεѕ сℓιεит 0.1";
 
     public HClient(HCUser user) throws IOException
     {

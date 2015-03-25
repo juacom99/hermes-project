@@ -39,6 +39,8 @@ public class AresFormater
         ret = backGrounddReplace(ret);
         ret = specialHTMLReplace(ret);
         ret= boldReplace(ret);
+        ret=underlineReplace(ret);
+        ret=italicReplace(ret);
         return ret;
     }
 
@@ -86,9 +88,7 @@ public class AresFormater
 
      public String boldReplace(String str)
     {
-        
-        str=str.replaceAll(((char)2)+"6",""+BOLD_CHARACTER);
-        
+       
         String s="("+BOLD_CHARACTER +"((\\w*)?)"+BOLD_CHARACTER+")|("+BOLD_CHARACTER +"((\\w*)?)$)";
         Pattern pattern = Pattern.compile(s);
         Matcher matcher = pattern.matcher(str);
@@ -109,6 +109,54 @@ public class AresFormater
         matcher.appendTail(sb);
         return sb.toString();
     }
+     
+      public String underlineReplace(String str)
+    {
+        
+        String s="("+UNDERLINE_CHARACTER +"((\\w*)?)"+UNDERLINE_CHARACTER+")|("+UNDERLINE_CHARACTER +"((\\w*)?)$)";
+        Pattern pattern = Pattern.compile(s);
+        Matcher matcher = pattern.matcher(str);
+        StringBuffer sb = new StringBuffer();
+
+        String color;
+        String text;
+
+        int count=0;
+        
+        while (matcher.find())
+        {
+            text = matcher.group(0);
+            
+                matcher.appendReplacement(sb,"<u>"+text+"</u>");
+       }
+       
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+      
+       public String italicReplace(String str)
+    {     
+        String s="("+ITALIC_CHARACTER +"((\\w*)?)"+ITALIC_CHARACTER+")|("+ITALIC_CHARACTER +"((\\w*)?)$)";
+        Pattern pattern = Pattern.compile(s);
+        Matcher matcher = pattern.matcher(str);
+        StringBuffer sb = new StringBuffer();
+
+        String color;
+        String text;
+
+        int count=0;
+        
+        while (matcher.find())
+        {
+            text = matcher.group(0);
+            
+                matcher.appendReplacement(sb,"<i>"+text+"</i>");
+       }
+       
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+       
      
     public String specialHTMLReplace(String str)
     {
