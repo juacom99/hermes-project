@@ -10,12 +10,16 @@ import com.hermes.client.HCUser;
 import com.hermes.client.HClient;
 import com.hermes.client.events.HClientAvatarEvent;
 import com.hermes.client.events.HClientEmoteEvent;
+import com.hermes.client.events.HClientEvent;
 import com.hermes.client.events.HClientJoinEvent;
 import com.hermes.client.events.HClientMessageEvent;
 import com.hermes.client.events.HClientNoSuchEvent;
 import com.hermes.client.events.HClientPartEvent;
 import com.hermes.client.events.HClientPersonalMessageEvent;
+import com.hermes.client.events.HClientTopicEvent;
 import com.hermes.client.events.HClientUrlEvent;
+import com.hermes.client.events.HClientUserListevent;
+import com.hermes.client.events.HClientUserUpdateEvent;
 import com.hermes.client.events.HIClientEvents;
 import com.hermes.common.HChannel;
 import com.hermes.common.HHash;
@@ -23,13 +27,11 @@ import com.hermes.common.constants.HBrowsable;
 import com.hermes.common.constants.HGender;
 import com.hermes.common.constants.HLineType;
 import com.hermes.common.constants.HLocation;
-import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Scanner;
-import java.util.UUID;
 import javax.swing.ImageIcon;
 
 
@@ -43,7 +45,7 @@ public class Main
     public static void main(String[] args) throws UnknownHostException, IOException, Exception
     {
 
-        HChannel ch = HHash.getInstance().decode("arlnk://CHATROOM:127.0.0.1:5000|Test");
+        HChannel ch = HHash.getInstance().decode("arlnk://CHATROOM:127.0.0.1:14884|Test");
 
         System.out.println("Connecting to: " + ch.getName() + " " + ch.getPublicIP().getHostAddress() + ":" + ((int) ch.getPort()) + "  " + ch.getTopic()+" on "+new Date());
 
@@ -110,6 +112,36 @@ public class Main
             {
                 //System.out.println("URL: "+evt.getUrlCaption()+"["+evt.getUrl()+"]");
             }
+
+            @Override
+            public void onTopic(HClientTopicEvent evt)
+            {
+               
+            }
+
+            @Override
+            public void onUserList(HClientUserListevent evt)
+            {
+               
+            }
+
+            @Override
+            public void onConnect(HClientEvent evt)
+            {
+                
+            }
+
+            @Override
+            public void onDisconnect(HClientEvent evt)
+            {
+                
+            }
+
+            @Override
+            public void onUserUpdate(HClientUserUpdateEvent evt)
+            {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
         };
         c.addClientEventListener(e);
 
@@ -163,8 +195,8 @@ public class Main
             }
         }
         
-       HCChannelDownloader cd=new HCChannelDownloader(new File("./ChatroomIPs.dat"));
-        cd.start();
+     /* HCChannelDownloader cd=new HCChannelDownloader(new File("./ChatroomIPs.dat"));
+        cd.start();*/
         
     }
     

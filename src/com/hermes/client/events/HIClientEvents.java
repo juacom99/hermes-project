@@ -37,4 +37,6 @@ public interface HIClientEvents
     public void onConnect(HClientEvent evt);
     
     public void onDisconnect(HClientEvent evt);
+    
+    public void onUserUpdate(HClientUserUpdateEvent evt);
 }

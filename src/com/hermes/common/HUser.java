@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 package com.hermes.common;
 
+import com.hermes.common.constants.HAdminLevel;
 import com.hermes.common.constants.HBrowsable;
 import com.hermes.common.constants.HGender;
 import com.hermes.common.constants.HLineType;
@@ -40,7 +41,7 @@ public abstract class HUser
     
      private byte age;
     private HGender gender;
-    private HLocation countryCode;
+    private HLocation country;
     private String region;
     private InetAddress publicIp;   
     private int dataport;
@@ -50,6 +51,7 @@ public abstract class HUser
     private byte uploads;
     private byte maxUploads;
     private byte queued;
+    private HAdminLevel level;
     
     private String personalMessage;
     private ImageIcon avatar;
@@ -63,7 +65,7 @@ public abstract class HUser
         this.browsable = browsable;
         this.age = age;
         this.gender = gender;
-        this.countryCode = countryCode;
+        this.country = countryCode;
         this.region = region;
         this.publicIp = publicIp;
         this.dataport = dataport;
@@ -84,7 +86,7 @@ public abstract class HUser
         this.browsable = browsable;
         this.age = age;
         this.gender = gender;
-        this.countryCode = countryCode;
+        this.country = countryCode;
         this.region = region;
         this.publicIp = publicIp;
         this.dataport = dataport;
@@ -132,9 +134,9 @@ public abstract class HUser
         return gender;
     }
 
-    public HLocation getCountryCode()
+    public HLocation getCountry()
     {
-        return countryCode;
+        return country;
     }
 
     public String getRegion()
@@ -182,6 +184,13 @@ public abstract class HUser
         return queued;
     }
 
+    public HAdminLevel getLevel()
+    {
+        return level;
+    }
+    
+    
+
     public void setAvatar(ImageIcon avatar)
     {
         //TODO add notification
@@ -206,6 +215,61 @@ public abstract class HUser
     public String getPersonalMessage()
     {
         return personalMessage;
+    }
+
+    public void setFilecount(int filecount)
+    {
+        this.filecount = filecount;
+    }
+
+    public void setBrowsable(HBrowsable browsable)
+    {
+        this.browsable = browsable;
+    }
+
+    public void setAge(byte age)
+    {
+        this.age = age;
+    }
+
+    public void setGender(HGender gender)
+    {
+        this.gender = gender;
+    }    
+    
+    public void setCountry(HLocation countryCode)
+    {
+        this.country = countryCode;
+    }
+
+    public void setRegion(String region)
+    {
+        this.region = region;
+    }
+
+    public void setPublicIp(InetAddress publicIp)
+    {
+        this.publicIp = publicIp;
+    }
+
+    public void setDataport(int dataport)
+    {
+        this.dataport = dataport;
+    }
+
+    public void setNodeIp(InetAddress nodeIp)
+    {
+        this.nodeIp = nodeIp;
+    }
+
+    public void setNodePort(int nodePort)
+    {
+        this.nodePort = nodePort;
+    }
+
+    public void setLevel(HAdminLevel level)
+    {
+        this.level = level;
     }
 
     @Override
