@@ -5,9 +5,9 @@
  */
 package com.hermes;
 
-import com.hermes.client.HCChannelDownloader;
 import com.hermes.client.HCUser;
 import com.hermes.client.HClient;
+import com.hermes.client.events.HClientAckEvent;
 import com.hermes.client.events.HClientAvatarEvent;
 import com.hermes.client.events.HClientEmoteEvent;
 import com.hermes.client.events.HClientEvent;
@@ -139,6 +139,12 @@ public class Main
 
             @Override
             public void onUserUpdate(HClientUserUpdateEvent evt)
+            {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void onServerAck(HClientAckEvent evt)
             {
                 throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }

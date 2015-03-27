@@ -18,6 +18,7 @@
  */
 package com.hermes.client;
 
+import com.hermes.client.events.HClientAckEvent;
 import com.hermes.client.events.HClientAvatarEvent;
 import com.hermes.client.events.HClientEmoteEvent;
 import com.hermes.client.events.HClientEvent;
@@ -113,7 +114,6 @@ public class HClient implements Runnable, ActionListener
             }
             P2 pkg = new P2(user.getGuid(), (short) user.getFilecount(), (short) user.getDataport(), user.getNodeIp(), (short) user.getNodePort(), user.getLinetype(), user.getUsername(), CLIENT_VERSION, user.getPrivateIp(), user.getPublicIp(), user.getBrowsable(), user.getUploads(), user.getMaxUploads(), user.getQueued(), user.getAge(), user.getGender(), user.getCountry(), user.getRegion());
             send(pkg);
-             sendPersonalMessage(user.getPersonalMessage());
             updateTimer.start();
 
         } catch (IOException ex)
@@ -269,7 +269,12 @@ public class HClient implements Runnable, ActionListener
                                         channel.setName(((com.hermes.server.packages.tcp.P3) p).getRoomname());
                                         this.user.setUsername(((com.hermes.server.packages.tcp.P3) p).getUsername());
                                         sendAvatar();
-                                       
+                                        sendPersonalMessage(this.user.getPersonalMessage());
+                                         evt = new HClientAckEvent(channel.getName(),this.user.getUsername());
+                                          for (int i = 0; i < events.size(); i++)
+                                            {
+                                                events.get(i).onServerAck((HClientAckEvent) evt);
+                                            }
                                         break;
                                     case 5:
                                         com.hermes.server.packages.tcp.P5 packa = ((com.hermes.server.packages.tcp.P5) p);

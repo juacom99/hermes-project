@@ -39,4 +39,6 @@ public interface HIClientEvents
     public void onDisconnect(HClientEvent evt);
     
     public void onUserUpdate(HClientUserUpdateEvent evt);
+    
+    public void onServerAck(HClientAckEvent evt);
 }
