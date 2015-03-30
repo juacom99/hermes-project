@@ -6,7 +6,6 @@
 package com.hermes.common;
 
 import com.hermes.client.HCChannel;
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
@@ -20,6 +19,7 @@ import java.util.logging.Logger;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
+import javax.xml.bind.DatatypeConverter;
 
 /**
  *
@@ -72,7 +72,7 @@ public class HHash
         else
         {
 
-            byte[] b = Base64.decode(hashlink);
+            byte[] b =DatatypeConverter.parseBase64Binary(hashlink); //Base64.decode(hashlink);
             b = d67(b, MAGIC_NUMBER);
             b = gzUncompress(b);
 
@@ -177,7 +177,7 @@ public class HHash
         byte[] b = bb.array();
         b = gzCompress(b);
         b = e67(b, MAGIC_NUMBER);
-        return "arlnk://" + Base64.encode(b);
+        return "arlnk://" + DatatypeConverter.printBase64Binary(b); //Base64.encode(b);
 
     }
 

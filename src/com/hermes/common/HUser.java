@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 package com.hermes.common;
-
+ 
 import com.hermes.common.constants.HAdminLevel;
 import com.hermes.common.constants.HBrowsable;
 import com.hermes.common.constants.HGender;

@@ -35,12 +35,17 @@ public class AresFormater
     public String toHTML(String s)
     {
 
-        String ret = foregroundReplace(s);
+        String ret = s.replace(((char) 2) + "6", "" + AresFormater.BOLD_CHARACTER);
+        ret = ret.replaceAll(((char) 2) + "7", "" + AresFormater.UNDERLINE_CHARACTER);
+        ret = ret.replaceAll(((char) 2) + "9", "" + AresFormater.ITALIC_CHARACTER);
+        ret = foregroundReplace(s);
         ret = backGrounddReplace(ret);
-        ret = specialHTMLReplace(ret);
-        ret= boldReplace(ret);
-        ret=underlineReplace(ret);
-        ret=italicReplace(ret);
+        ret = posterReplace(ret);
+        //   ret = specialHTMLReplace(ret);
+        ret = boldReplace(ret);
+        ret = underlineReplace(ret);
+        ret = italicReplace(ret);
+
         return ret;
     }
 
@@ -86,80 +91,73 @@ public class AresFormater
         return sb.toString();
     }
 
-     public String boldReplace(String str)
+    public String boldReplace(String str)
     {
-       
-        str= str.replaceAll("6",""+BOLD_CHARACTER);
-        String s="("+BOLD_CHARACTER +"((\\w*)?)"+BOLD_CHARACTER+")|("+BOLD_CHARACTER +"((\\w*)?)$)";
-        Pattern pattern = Pattern.compile(s);
+        String s = BOLD_CHARACTER + "((.*)?)" + BOLD_CHARACTER + "|" + BOLD_CHARACTER + "((.*)?)$";
+        Pattern pattern = Pattern.compile(s,Pattern.UNICODE_CHARACTER_CLASS);
         Matcher matcher = pattern.matcher(str);
         StringBuffer sb = new StringBuffer();
 
         String color;
         String text;
 
-        int count=0;
-        
         while (matcher.find())
         {
             text = matcher.group(0);
-            
-                matcher.appendReplacement(sb,"<b>"+text+"</b>");
-       }
-       
+
+            matcher.appendReplacement(sb, "<span style='font-weight:bold;'>" + text + "</span>");
+        }
+
         matcher.appendTail(sb);
         return sb.toString();
     }
-     
-      public String underlineReplace(String str)
+
+    public String underlineReplace(String str)
     {
-        str= str.replaceAll("7",""+UNDERLINE_CHARACTER);
-        String s="("+UNDERLINE_CHARACTER +"((\\w*)?)"+UNDERLINE_CHARACTER+")|("+UNDERLINE_CHARACTER +"((\\w*)?)$)";
-        Pattern pattern = Pattern.compile(s);
+        String s = "(" + UNDERLINE_CHARACTER + "((.*)?)" + UNDERLINE_CHARACTER +")|(" + UNDERLINE_CHARACTER + "((.*)?)$)";
+        Pattern pattern = Pattern.compile(s,Pattern.UNICODE_CHARACTER_CLASS);
         Matcher matcher = pattern.matcher(str);
         StringBuffer sb = new StringBuffer();
 
         String color;
         String text;
 
-        int count=0;
-        
+        int count = 0;
+
         while (matcher.find())
         {
             text = matcher.group(0);
-            
-                matcher.appendReplacement(sb,"<u>"+text+"</u>");
-       }
-       
+
+            matcher.appendReplacement(sb, "<span style=\"text-decoration: underline;\">" + text + "</span>");
+        }
+
         matcher.appendTail(sb);
         return sb.toString();
     }
-      
-       public String italicReplace(String str)
-    {    
-        str= str.replaceAll("9",""+ITALIC_CHARACTER);
-        String s="("+ITALIC_CHARACTER +"((\\w*)?)"+ITALIC_CHARACTER+")|("+ITALIC_CHARACTER +"((\\w*)?)$)";
-        Pattern pattern = Pattern.compile(s);
+
+    public String italicReplace(String str)
+    {
+        String s = "(" + ITALIC_CHARACTER + "((.*)?)" + ITALIC_CHARACTER + ")|(" + ITALIC_CHARACTER + "((.*)?)$)";
+        Pattern pattern = Pattern.compile(s,Pattern.UNICODE_CHARACTER_CLASS);
         Matcher matcher = pattern.matcher(str);
         StringBuffer sb = new StringBuffer();
 
         String color;
         String text;
 
-        int count=0;
-        
+        int count = 0;
+
         while (matcher.find())
         {
             text = matcher.group(0);
-            
-                matcher.appendReplacement(sb,"<i>"+text+"</i>");
-       }
-       
+
+            matcher.appendReplacement(sb, "<span style=\"font-style: italic;\">" + text + "</span>");
+        }
+
         matcher.appendTail(sb);
         return sb.toString();
     }
-       
-     
+
     public String specialHTMLReplace(String str)
     {
 
@@ -174,6 +172,23 @@ public class AresFormater
         }
         m.appendTail(sb);
         return sb.toString().replaceAll(" ", "&nbsp;");
+    }
+
+    public String posterReplace(String str)
+    {
+        //[poster=http://i.imgur.com/57644h0.jpg]
+        String urlValidationRegex = "\\[poster=((https?)://(www\\d?|[a-zA-Z0-9]+)?.[a-zA-Z0-9-]+(\\:|.)([a-zA-Z0-9.]+|(\\d+)?)([/?:].*)?)\\]";
+        Pattern p = Pattern.compile(urlValidationRegex);
+        Matcher m = p.matcher(str);
+        StringBuffer sb = new StringBuffer();
+        while (m.find())
+        {
+            String found = m.group(1);
+            m.appendReplacement(sb, "<img src='" + found + "'/>");
+        }
+        m.appendTail(sb);
+        return sb.toString().replaceAll(" ", "&nbsp;");
+
     }
 
     public static AresFormater getInstance()
