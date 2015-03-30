@@ -5,6 +5,7 @@
  */
 package com.hermes.common;
 
+import java.awt.Color;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,10 +21,29 @@ public class AresFormater
     public static final char BOLD_CHARACTER = ((char) 6);
     public static final char ITALIC_CHARACTER = ((char) 9);
     public static final char UNDERLINE_CHARACTER = ((char) 7);
-    private static final String[] COLORS =
+    
+    public static final Color[] COLORS={
+        new Color(248,248,248),//Blanco
+        Color.BLACK,//Negro
+        new Color(0,0,128),        
+        new Color(0,128,0),//verde oscuro
+        Color.RED,//Rojo
+        new Color(128,0,0),//rojo oscuro
+        new Color(128,0,128),//violeta
+        new Color(255,128,0),//naranja
+        new Color(255,255,0),//amarillo
+        Color.GREEN,//verde
+        new Color(0,128,128), //ocean green
+        new Color(0,255,255),//Cyan
+        Color.BLUE,
+        new Color(255,0,255),//Rosado
+        new Color(128,128,128),//gris oscuro
+        new Color(191,191,191) //gris claro
+    };
+   /* private static final String[] COLORS =
     {
         "#f8f8f8", "#000000", "#000080", "#008000", "#ff0000", "#800000", "#800080", "#ff8000", "#ffff00", "#00ff00", "#008080", "#00ffff", "#0000ff", "#ff00ff", "#808080", "#bfbfbf"
-    };
+    };*/
 
     private static AresFormater instance;
 
@@ -61,7 +81,7 @@ public class AresFormater
 
         while (matcher.find())
         {
-            color = COLORS[Integer.parseInt(matcher.group(1))];
+            color = "#"+Integer.toHexString(COLORS[Integer.parseInt(matcher.group(1))].getRGB()).substring(2);
             text = matcher.group(2);
             matcher.appendReplacement(sb, "<span style=\"background-color:" + color + "\">" + text);
 
@@ -83,7 +103,7 @@ public class AresFormater
 
         while (matcher.find())
         {
-            color = COLORS[Integer.parseInt(matcher.group(1))];
+             color = "#"+Integer.toHexString(COLORS[Integer.parseInt(matcher.group(1))].getRGB()).substring(2);
             text = matcher.group(2);
             matcher.appendReplacement(sb, "<span style=\"color:" + color + "\">" + text);
         }
