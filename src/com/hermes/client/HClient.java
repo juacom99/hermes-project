@@ -88,16 +88,15 @@ public class HClient implements Runnable, ActionListener
         this.running = false;
     }
 
-    public void connect(InetAddress ip, int port) throws IOException, Exception
+    public void connect(InetAddress ip, int port) throws IOException
     {
         InetSocketAddress addr = new InetSocketAddress(ip, port);
         connect(addr);
     }
 
-    public void connect(SocketAddress addr) throws Exception
+    public void connect(SocketAddress addr) throws IOException
     {
-        try
-        {
+        
             channel = new HCChannel();
             socket = SocketChannel.open();
             socket.connect(addr);
@@ -115,11 +114,7 @@ public class HClient implements Runnable, ActionListener
             P2 pkg = new P2(user.getGuid(), (short) user.getFilecount(), (short) user.getDataport(), user.getNodeIp(), (short) user.getNodePort(), user.getLinetype(), user.getUsername(), CLIENT_VERSION, user.getPrivateIp(), user.getPublicIp(), user.getBrowsable(), user.getUploads(), user.getMaxUploads(), user.getQueued(), user.getAge(), user.getGender(), user.getCountry(), user.getRegion());
             send(pkg);
             updateTimer.start();
-
-        } catch (IOException ex)
-        {
-            Logger.getLogger(HClient.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
     }
 
     public void disconnect() throws IOException

@@ -26,6 +26,7 @@ import com.hermes.common.packages.tcp.HPackage;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.security.InvalidParameterException;
 
 /**
  * @author Joaquin Martinez
@@ -75,12 +76,11 @@ public class P2 extends HPackage {
     private HLocation countryCode;
     private String region;
 
-    public P2(String guid, short filecount, short dataport, InetAddress nodeIp, short nodePort, HLineType linetype, String username, String version, InetAddress privateIp, InetAddress publicIp, HBrowsable browsable, byte uploads, byte maxUploads, byte queued, byte age, HGender gender, HLocation countryCode, String region) throws java.lang.Exception
-    {
+    public P2(String guid, short filecount, short dataport, InetAddress nodeIp, short nodePort, HLineType linetype, String username, String version, InetAddress privateIp, InetAddress publicIp, HBrowsable browsable, byte uploads, byte maxUploads, byte queued, byte age, HGender gender, HLocation countryCode, String region) {
         super(2);
         if(guid.length()!=16)
         {
-            throw new Exception();
+            throw new InvalidParameterException("The GUID must have 16 characters");
         }
         this.guid = guid;
         this.filecount = filecount;
