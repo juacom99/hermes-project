@@ -46,6 +46,10 @@ public class HHash
         {
             hashlink = hashlink.substring(8);
         }
+        else if (hashlink.startsWith("\\\\arlnk://"))
+        {
+                hashlink = hashlink.substring(10);
+        }
 
         if (hashlink.toUpperCase().startsWith("CHATROOM:"))
         {
@@ -59,8 +63,6 @@ public class HHash
                 int port = Integer.parseInt(hashlink.substring(cloneIndex + 1, barIndex));
                 String name = hashlink.substring(barIndex + 1, hashlink.length());
 
-                System.out.println(name + " " + ip.getHostAddress() + ":" + port);
-
                 ch = new HCChannel(name, ip, port, InetAddress.getLocalHost(), "");
             }
             catch (UnknownHostException ex)
@@ -72,7 +74,7 @@ public class HHash
         else
         {
 
-            byte[] b =DatatypeConverter.parseBase64Binary(hashlink); //Base64.decode(hashlink);
+            byte[] b = DatatypeConverter.parseBase64Binary(hashlink); //Base64.decode(hashlink);
             b = d67(b, MAGIC_NUMBER);
             b = gzUncompress(b);
 
@@ -84,10 +86,10 @@ public class HHash
 
             bb.get(bIp);
             InetAddress privateIp = InetAddress.getByAddress(bIp);
-            byte hi=bb.get();
-            byte low=bb.get();
-            
-            int port = ( ((low&0xFF)<<8) | (hi&0xFF) ); 
+            byte hi = bb.get();
+            byte low = bb.get();
+
+            int port = (((low & 0xFF) << 8) | (hi & 0xFF));
 
             bb.get(bIp);
             InetAddress publicIp = InetAddress.getByAddress(bIp);

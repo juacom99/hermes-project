@@ -68,14 +68,6 @@ public class P92 extends HPackage
         this.language=HLanguage.get(bb.get());
         this.cookie=bb.getInt()  & 0xffff;
         this.supportAvatar=(bb.get()==1);
-        
-        System.out.println("Sharables types: "+this.sherableType);
-        System.out.println("Other "+canShareOthers());
-        System.out.println("Softwares "+canShareSoftwares());
-        System.out.println("Documents "+canShareDocuments());
-        System.out.println("Images "+canShareImages());
-        System.out.println("Videos "+canShareVideos());
-        System.out.println("Music "+canShareMusic());
     }
     
 
