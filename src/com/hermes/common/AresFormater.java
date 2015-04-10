@@ -51,8 +51,8 @@ public class AresFormater
 
     public String toHTML(String s)
     {
-
-        String ret =s.replaceAll("\\<", "&lt;").replaceAll("\\>", "&gt;");
+     
+        String ret =s.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
         ret=ret.replaceAll(" ","&nbsp;");
         ret=ret.replaceAll("    ","&#09;");        
         ret = ret.replace(((char) 2) + "6", "" + AresFormater.BOLD_CHARACTER);
@@ -191,11 +191,11 @@ public class AresFormater
         }
         m.appendTail(sb);
         
-        str=sb.toString();
+      /*  str=sb.toString();
 
-        str=str.replaceAll("[^<img src=']"+regexUrl,"<a href='$1'></a>");
+        str=str.replaceAll("[^<img src=']"+regexUrl,"<a href='$1'></a>");*/
         
-        return str;//sb.toString();
+        return sb.toString();
 
     }
 
