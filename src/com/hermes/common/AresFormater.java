@@ -68,7 +68,7 @@ public class AresFormater
         return ret;
     }
 
-    public String backGrounddReplace(String str)
+    private String backGrounddReplace(String str)
     {
         //replace foreground
         Pattern pattern = Pattern.compile(BACKGROUND_CHARACTER + "(\\d{2})((\\w*))");
@@ -89,7 +89,7 @@ public class AresFormater
         return sb.toString();
     }
 
-    public String foregroundReplace(String str)
+    private String foregroundReplace(String str)
     {
         //replace foreground
 
@@ -110,7 +110,7 @@ public class AresFormater
         return sb.toString();
     }
 
-    public String boldReplace(String str)
+    private String boldReplace(String str)
     {
         String s = BOLD_CHARACTER + "((.*)?)" + BOLD_CHARACTER + "|" + BOLD_CHARACTER + "((.*)?)$";
         Pattern pattern = Pattern.compile(s, Pattern.UNICODE_CHARACTER_CLASS);
@@ -131,7 +131,7 @@ public class AresFormater
         return sb.toString();
     }
 
-    public String underlineReplace(String str)
+    private String underlineReplace(String str)
     {
         String s = "(" + UNDERLINE_CHARACTER + "((.*)?)" + UNDERLINE_CHARACTER + ")|(" + UNDERLINE_CHARACTER + "((.*)?)$)";
         Pattern pattern = Pattern.compile(s, Pattern.UNICODE_CHARACTER_CLASS);
@@ -154,7 +154,7 @@ public class AresFormater
         return sb.toString();
     }
 
-    public String italicReplace(String str)
+    private String italicReplace(String str)
     {
         String s = "(" + ITALIC_CHARACTER + "((.*)?)" + ITALIC_CHARACTER + ")|(" + ITALIC_CHARACTER + "((.*)?)$)";
         Pattern pattern = Pattern.compile(s, Pattern.UNICODE_CHARACTER_CLASS);
@@ -176,11 +176,12 @@ public class AresFormater
         matcher.appendTail(sb);
         return sb.toString();
     }
-    public String posterReplace(String str)
+    
+    private String posterReplace(String str)
     {
         
         String regexUrl="((https?)://(www\\d?|[a-zA-Z0-9]+)?.[a-zA-Z0-9-]+(\\:|.)([a-zA-Z0-9.]+|(\\d+)?)([/?:].*)?)";
-        String urlValidationRegex = "\\[(poster|image|img)="+regexUrl+"\\]";
+        String urlValidationRegex = "\\[(poster|image)="+regexUrl+"\\]";
         Pattern p = Pattern.compile(urlValidationRegex);
         Matcher m = p.matcher(str);
         StringBuffer sb = new StringBuffer();
