@@ -234,7 +234,7 @@ public class HCChannelDownloader implements Runnable
     public HChannel get(int index)
     {
         HChannel ret=null;
-        if(0<index && index<channels.size())
+        if(0<=index && index<channels.size())
         {
             ret=channels.get(index);
         }
