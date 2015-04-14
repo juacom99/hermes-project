@@ -5,6 +5,7 @@
  */
 package com.hermes.client;
 
+import com.hermes.client.events.HChannelListEvents;
 import com.hermes.common.HChannel;
 import com.hermes.common.IPCacheManager;
 import com.hermes.common.packages.tcp.HPackage;
@@ -17,7 +18,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.PortUnreachableException;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -40,15 +40,36 @@ public class HCChannelDownloader implements Runnable
     private IPCacheManager manager;
     private Thread downloadThread;
 
+    private ArrayList<HChannelListEvents>  events;
+    
+    
     public HCChannelDownloader(File cacheFile) throws IOException
     {
 
+        events=new ArrayList<HChannelListEvents>();
+        
         manager = new IPCacheManager(cacheFile);
         toProcess = manager.read();
         channels = new ArrayList<HChannel>();
         downloadThread = new Thread(this);
     }
 
+    public void addEventListener(HChannelListEvents e)
+    {
+        if(!events.contains(e))
+        {
+            events.add(e);
+        }
+    }
+    
+    public void removeEventListener(HChannelListEvents e)
+    {
+        if(events.contains(e))
+        {
+            events.remove(e);
+        }
+    }
+    
     public void start()
     {
         if (!downloadThread.isAlive())
@@ -111,7 +132,7 @@ public class HCChannelDownloader implements Runnable
                             channel.setUserCount(d.getUserCount());
 
                             channels.add(channel);
-                            
+                            notifyAll(channel,channels.indexOf(channel));
                             System.out.println(channel.getName()+" Added");
                             i = d.getKnownChannels().iterator();
 
@@ -210,4 +231,21 @@ public class HCChannelDownloader implements Runnable
 
     }
 
+    public HChannel get(int index)
+    {
+        HChannel ret=null;
+        if(0<index && index<channels.size())
+        {
+            ret=channels.get(index);
+        }
+        
+        return ret;
+    }
+    private void notifyAll(HChannel channel,int index)
+    {
+        for(int i=0;i<events.size();i++)
+        {
+            events.get(i).onNewChannel(channel,index);
+        }
+    }
 }

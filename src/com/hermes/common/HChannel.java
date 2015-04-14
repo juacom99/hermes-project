@@ -75,6 +75,21 @@ public class HChannel
         return port;
     }
 
+    public String getServerVersion()
+    {
+        return serverVersion;
+    }
+
+    public HLanguage getLanguage()
+    {
+        return language;
+    }
+
+    public int getUserCount()
+    {
+        return userCount;
+    }
+    
     public void setName(String name)
     {
         this.name = name;
