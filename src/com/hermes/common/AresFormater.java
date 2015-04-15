@@ -112,7 +112,7 @@ public class AresFormater
 
     private String boldReplace(String str)
     {
-        String s = BOLD_CHARACTER + "((.*)?)" + BOLD_CHARACTER + "|" + BOLD_CHARACTER + "((.*)?)$";
+        String s ="(("+ BOLD_CHARACTER + "((.*)?)" + BOLD_CHARACTER + ")|(" + BOLD_CHARACTER + "((.*)?)$))";
         Pattern pattern = Pattern.compile(s, Pattern.UNICODE_CHARACTER_CLASS);
         Matcher matcher = pattern.matcher(str);
         StringBuffer sb = new StringBuffer();
@@ -122,7 +122,7 @@ public class AresFormater
 
         while (matcher.find())
         {
-            text = matcher.group(0);
+            text = matcher.group(1);
 
             matcher.appendReplacement(sb, "<span style='font-weight:bold;'>" + text + "</span>");
         }
@@ -193,9 +193,6 @@ public class AresFormater
         m.appendTail(sb);
         
         str=sb.toString();
-
-        System.out.println(str);
-        System.out.println(str.matches("(?!<img src=)^("+regexUrl+")"));
         str=str.replaceAll("(?!<img src=)^("+regexUrl+")","<a href='$1'></a>");
         
         return sb.toString();

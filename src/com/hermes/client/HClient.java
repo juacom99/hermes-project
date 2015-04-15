@@ -382,6 +382,14 @@ public class HClient implements Runnable, ActionListener
                                         }
 
                                         break;
+                                    case 31:
+                                         channel.setTopic(((com.hermes.server.packages.tcp.P31) p).getTopic());
+                                        evt = new HClientTopicEvent(channel.getTopic());
+                                        for (int i = 0; i < events.size(); i++)
+                                        {
+                                            events.get(i).onTopic((HClientTopicEvent) evt);
+                                        }
+                                        break;
                                     case 32:
                                         channel.setTopic(((com.hermes.server.packages.tcp.P32) p).getTopic());
                                         evt = new HClientTopicEvent(channel.getTopic());
