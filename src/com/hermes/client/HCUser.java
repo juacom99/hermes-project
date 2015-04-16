@@ -35,6 +35,7 @@ public class HCUser extends HUser
     public HCUser(String username,String guid, int filecount, HLineType linetype, HBrowsable browsable,byte age, HGender gender, HLocation countryCode, String region, InetAddress publicIp, int dataport, InetAddress privateIp, InetAddress nodeIp, int nodePort, byte uploads, byte maxUploads, byte queued)
     {
         super(username, guid, filecount, linetype, browsable, age, gender, countryCode, region, publicIp, dataport, privateIp, nodeIp, nodePort, uploads, maxUploads, queued);
+        setPersonalMessage("");
     }
     
     public HCUser(String username,short filecount, HLineType linetype, HBrowsable browsable, byte age, HGender gender, HLocation countryCode, String region, InetAddress publicIp, short dataport, InetAddress privateIp, InetAddress nodeIp, short nodePort, byte uploads, byte maxUploads, byte queued)

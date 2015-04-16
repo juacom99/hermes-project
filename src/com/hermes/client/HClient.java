@@ -517,4 +517,9 @@ public class HClient implements Runnable, ActionListener
         P4 pkg = new P4((short) user.getFilecount(), user.getBrowsable(), user.getNodeIp(), (short) user.getNodePort(), user.getPrivateIp(), user.getAge(), user.getGender(), user.getCountry(), user.getRegion());
         send(pkg);
     }
+
+    public void setUser(HCUser user)
+    {
+        this.user = user;
+    }
 }
