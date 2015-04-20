@@ -6,6 +6,7 @@
 package com.hermes.client;
 
 import com.hermes.client.events.HChannelListEvents;
+import com.hermes.client.events.HClientEvent;
 import com.hermes.common.HChannel;
 import com.hermes.common.IPCacheManager;
 import com.hermes.common.packages.tcp.HPackage;
@@ -40,14 +41,13 @@ public class HCChannelDownloader implements Runnable
     private IPCacheManager manager;
     private Thread downloadThread;
 
-    private ArrayList<HChannelListEvents>  events;
-    
-    
+    private ArrayList<HChannelListEvents> events;
+
     public HCChannelDownloader(File cacheFile) throws IOException
     {
 
-        events=new ArrayList<HChannelListEvents>();
-        
+        events = new ArrayList<HChannelListEvents>();
+
         manager = new IPCacheManager(cacheFile);
         toProcess = manager.read();
         channels = new ArrayList<HChannel>();
@@ -56,67 +56,76 @@ public class HCChannelDownloader implements Runnable
 
     public void addEventListener(HChannelListEvents e)
     {
-        if(!events.contains(e))
+        if (!events.contains(e))
         {
             events.add(e);
         }
     }
-    
+
     public void removeEventListener(HChannelListEvents e)
     {
-        if(events.contains(e))
+        if (events.contains(e))
         {
             events.remove(e);
         }
     }
-    
+
     public void start()
     {
         if (!downloadThread.isAlive())
         {
+            downloadThread=new Thread(this);
             downloadThread.start();
+
+            HClientEvent evt = new HClientEvent();
+            for (int i = 0; i < events.size(); i++)
+            {
+                events.get(i).onDownloadStart(evt);
+            }
         }
     }
 
     @Override
     public void run()
     {
-        
-            HChannel channel, temp;
 
-            byte[] b =
+        HChannel channel, temp;
+
+        byte[] b =
+        {
+            2
+        };
+        DatagramPacket pack;
+        DatagramSocket sock;
+
+        byte[] bRes = new byte[1024];
+        DatagramPacket res = new DatagramPacket(bRes, bRes.length);
+
+        int id;
+        HPackage p;
+        Iterator<HChannel> i;
+
+        while (!toProcess.isEmpty())
+        {
+            try
             {
-                2
-            };
-            DatagramPacket pack;
-            DatagramSocket sock;
+                pack = new DatagramPacket(b, b.length);
+                sock = new DatagramSocket();
+                sock.setSoTimeout(800);
 
-            byte[] bRes = new byte[1024];
-            DatagramPacket res = new DatagramPacket(bRes, bRes.length);
+                channel = toProcess.poll();
 
-            int id;
-            HPackage p;
-            Iterator<HChannel> i;
+                sock.connect(new InetSocketAddress(channel.getPublicIP(), channel.getPort()));
+                sock.send(pack);
+                sock.receive(res);
+                sock.disconnect();
+                ByteBuffer bb = ByteBuffer.wrap(res.getData());
+                bb.order(ByteOrder.LITTLE_ENDIAN);
+                id = (bb.get() & 0xFF);
+                p = deserialize(id, bb);
 
-            while (!toProcess.isEmpty())
-            {
-                try
+                if (p != null)
                 {
-                    pack = new DatagramPacket(b, b.length);
-                    sock = new DatagramSocket();
-                    sock.setSoTimeout(800);
-
-                    channel = toProcess.poll();
-
-                    sock.connect(new InetSocketAddress(channel.getPublicIP(), channel.getPort()));
-                    sock.send(pack);
-                    sock.receive(res);
-                    sock.disconnect();
-                    ByteBuffer bb = ByteBuffer.wrap(res.getData());
-                    bb.order(ByteOrder.LITTLE_ENDIAN);
-                    id = (bb.get() & 0xFF);
-                    p = deserialize(id, bb);
-
                     //TODO: change to dispacher
                     switch (p.getId())
                     {
@@ -132,8 +141,8 @@ public class HCChannelDownloader implements Runnable
                             channel.setUserCount(d.getUserCount());
 
                             channels.add(channel);
-                            notifyAll(channel,channels.indexOf(channel));
-                            System.out.println(channel.getName()+" Added");
+                            notifyAll(channel, channels.indexOf(channel));
+                            System.out.println(channel.getName() + "(" + channel.getPublicIP().getHostAddress() + ":" + channel.getPort() + ") Added");
                             i = d.getKnownChannels().iterator();
 
                             while (i.hasNext())
@@ -147,25 +156,26 @@ public class HCChannelDownloader implements Runnable
                             }
                             break;
                     }
+                }
+                sock.close();
+            } catch (SocketTimeoutException ex)
+            {
 
-                    sock.close();
-                } catch (SocketTimeoutException ex)
-                {
+            } catch (PortUnreachableException ex)
+            {
 
-                }
-                catch(PortUnreachableException ex)
-                {
-                    
-                }
-                catch(IOException ex)
-                {
-                    
-                }
+            } catch (IOException ex)
+            {
 
             }
-            System.out.println(channels.size()+" Downloaded");
 
-        
+        }
+        System.out.println(channels.size() + " Downloaded");
+        HClientEvent evt = new HClientEvent();
+        for (int j = 0; j < events.size(); j++)
+        {
+            events.get(j).onDownloadFinish(evt);
+        }
     }
 
     private HPackage deserialize(int id, ByteBuffer payload)
@@ -184,8 +194,7 @@ public class HCChannelDownloader implements Runnable
 
             } catch (ClassNotFoundException ex1)
             {
-                Logger.getLogger(HClient.class
-                        .getName()).log(Level.SEVERE, null, ex1);
+                System.err.println("*******************ID: "+id+" not found");
             }
 
         }
@@ -233,19 +242,30 @@ public class HCChannelDownloader implements Runnable
 
     public HChannel get(int index)
     {
-        HChannel ret=null;
-        if(0<=index && index<channels.size())
+        HChannel ret = null;
+        if (0 <= index && index < channels.size())
         {
-            ret=channels.get(index);
+            ret = channels.get(index);
         }
-        
+
         return ret;
     }
-    private void notifyAll(HChannel channel,int index)
+
+    public void restart()
     {
-        for(int i=0;i<events.size();i++)
+        if (!downloadThread.isAlive())
         {
-            events.get(i).onNewChannel(channel,index);
+            toProcess.clear();
+            toProcess.addAll(channels);
+            channels.clear();
+        }
+    }
+
+    private void notifyAll(HChannel channel, int index)
+    {
+        for (int i = 0; i < events.size(); i++)
+        {
+            events.get(i).onNewChannel(channel, index);
         }
     }
 }

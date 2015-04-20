@@ -25,13 +25,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 /**
- * @author Joaquin Martinez This Class represents the MSG_CHAT_CLIENT_AVATAR
+ * @author Joaquin Martinez
+ * This Class represents the MSG_CHAT_CLIENT_AVATAR
  * Package Data Format: [x Bytes - Avatar]
  */
 public class P9 extends HPackage

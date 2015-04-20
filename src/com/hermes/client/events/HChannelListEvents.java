@@ -14,4 +14,9 @@ import com.hermes.common.HChannel;
 public interface HChannelListEvents
 {
     public void onNewChannel(HChannel channel,int index);
+    
+    public void onDownloadStart(HClientEvent evt);
+    
+    public void onDownloadFinish(HClientEvent evt);
+    
 }

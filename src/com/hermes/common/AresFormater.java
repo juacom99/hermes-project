@@ -113,7 +113,7 @@ public class AresFormater
     private String boldReplace(String str)
     {
         String s ="(("+ BOLD_CHARACTER + "((.*)?)" + BOLD_CHARACTER + ")|(" + BOLD_CHARACTER + "((.*)?)$))";
-        Pattern pattern = Pattern.compile(s, Pattern.UNICODE_CHARACTER_CLASS);
+      /* Pattern pattern = Pattern.compile(s, Pattern.UNICODE_CHARACTER_CLASS);
         Matcher matcher = pattern.matcher(str);
         StringBuffer sb = new StringBuffer();
 
@@ -122,13 +122,15 @@ public class AresFormater
 
         while (matcher.find())
         {
-            text = matcher.group(1);
+            text = matcher.group(0);
 
             matcher.appendReplacement(sb, "<span style='font-weight:bold;'>" + text + "</span>");
         }
 
         matcher.appendTail(sb);
-        return sb.toString();
+        return sb.toString();*/
+        
+        return str.replaceAll(s,"<span style='font-weight:bold;'>$1</span>");
     }
 
     private String underlineReplace(String str)
@@ -138,10 +140,8 @@ public class AresFormater
         Matcher matcher = pattern.matcher(str);
         StringBuffer sb = new StringBuffer();
 
-        String color;
         String text;
 
-        int count = 0;
 
         while (matcher.find())
         {
@@ -160,11 +160,7 @@ public class AresFormater
         Pattern pattern = Pattern.compile(s, Pattern.UNICODE_CHARACTER_CLASS);
         Matcher matcher = pattern.matcher(str);
         StringBuffer sb = new StringBuffer();
-
-        String color;
         String text;
-
-        int count = 0;
 
         while (matcher.find())
         {
