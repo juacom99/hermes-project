@@ -167,11 +167,9 @@ public class HClient implements Runnable, ActionListener
 
     public void sendAvatar()
     {
-        if (user.getAvatar() != null)
-        {
+       
             P9 pkg = new P9(user.getAvatar());
             send(pkg);
-        }
     }
 
     public void sendPersonalMessage(String personalMessage)

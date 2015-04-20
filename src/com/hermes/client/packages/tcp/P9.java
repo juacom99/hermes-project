@@ -29,8 +29,7 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 /**
- * @author Joaquin Martinez
- * This Class represents the MSG_CHAT_CLIENT_AVATAR
+ * @author Joaquin Martinez This Class represents the MSG_CHAT_CLIENT_AVATAR
  * Package Data Format: [x Bytes - Avatar]
  */
 public class P9 extends HPackage
@@ -54,24 +53,32 @@ public class P9 extends HPackage
     public ByteBuffer getPayload()
     {
         ByteBuffer msg = null;
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        BufferedImage bi = new BufferedImage(avatar.getIconWidth(), avatar.getIconHeight(), BufferedImage.TYPE_INT_RGB);
-        Graphics2D g2d = bi.createGraphics();
-        g2d.drawImage(this.avatar.getImage(), 0, 0, null);
-
-        try
+        if (this.avatar != null)
         {
-            ImageIO.write(bi, "JPEG", baos);
-            byte[] bAvatar = baos.toByteArray();
-            msg = ByteBuffer.allocate(bAvatar.length);
-            msg.order(ByteOrder.LITTLE_ENDIAN);
-            msg.put(bAvatar);
-        }
-        catch (IOException ex)
-        {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            BufferedImage bi = new BufferedImage(avatar.getIconWidth(), avatar.getIconHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics2D g2d = bi.createGraphics();
+            g2d.drawImage(this.avatar.getImage(), 0, 0, null);
 
-            return msg;
+            try
+            {
+                ImageIO.write(bi, "JPEG", baos);
+                byte[] bAvatar = baos.toByteArray();
+                msg = ByteBuffer.allocate(bAvatar.length);
+                msg.order(ByteOrder.LITTLE_ENDIAN);
+                msg.put(bAvatar);
+            }
+            catch (IOException ex)
+            {
+
+                return msg;
+            }
         }
+        else
+        {
+            msg=ByteBuffer.allocate(0);
+        }
+
         return msg;
     }
 }

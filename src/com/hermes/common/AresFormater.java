@@ -112,8 +112,8 @@ public class AresFormater
 
     private String boldReplace(String str)
     {
-        String s ="(("+ BOLD_CHARACTER + "((.*)?)" + BOLD_CHARACTER + ")|(" + BOLD_CHARACTER + "((.*)?)$))";
-      /* Pattern pattern = Pattern.compile(s, Pattern.UNICODE_CHARACTER_CLASS);
+        String s ="("+ BOLD_CHARACTER + "(.*?)" + BOLD_CHARACTER + ")|(" + BOLD_CHARACTER + "(.*?)$)";
+      Pattern pattern = Pattern.compile(s, Pattern.UNICODE_CHARACTER_CLASS);
         Matcher matcher = pattern.matcher(str);
         StringBuffer sb = new StringBuffer();
 
@@ -128,14 +128,14 @@ public class AresFormater
         }
 
         matcher.appendTail(sb);
-        return sb.toString();*/
+        return sb.toString();
         
-        return str.replaceAll(s,"<span style='font-weight:bold;'>$1</span>");
+       // return str.replaceAll(s,"<span style='font-weight:bold;'>$1</span>");
     }
 
     private String underlineReplace(String str)
     {
-        String s = "(" + UNDERLINE_CHARACTER + "((.*)?)" + UNDERLINE_CHARACTER + ")|(" + UNDERLINE_CHARACTER + "((.*)?)$)";
+        String s = "("+UNDERLINE_CHARACTER + "(.*?)" + UNDERLINE_CHARACTER + ")|(" + UNDERLINE_CHARACTER + "(.*?)$)";
         Pattern pattern = Pattern.compile(s, Pattern.UNICODE_CHARACTER_CLASS);
         Matcher matcher = pattern.matcher(str);
         StringBuffer sb = new StringBuffer();
@@ -156,7 +156,7 @@ public class AresFormater
 
     private String italicReplace(String str)
     {
-        String s = "(" + ITALIC_CHARACTER + "((.*)?)" + ITALIC_CHARACTER + ")|(" + ITALIC_CHARACTER + "((.*)?)$)";
+        String s = "(" + ITALIC_CHARACTER + "(.*?)" + ITALIC_CHARACTER + ")|(" + ITALIC_CHARACTER + "(.*?)$)";
         Pattern pattern = Pattern.compile(s, Pattern.UNICODE_CHARACTER_CLASS);
         Matcher matcher = pattern.matcher(str);
         StringBuffer sb = new StringBuffer();
