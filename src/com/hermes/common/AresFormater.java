@@ -24,7 +24,7 @@ public class AresFormater
     public static final char BOLD_CHARACTER = ((char) 6);
     public static final char ITALIC_CHARACTER = ((char) 9);
     public static final char UNDERLINE_CHARACTER = ((char) 7);
-    public static final HashMap<String, String> emoticons = new HashMap<String, String>();
+
 
     public static final Color[] COLORS =
     {
@@ -50,53 +50,7 @@ public class AresFormater
 
     private AresFormater()
     {
-        emoticons.put(":-?\\)", "0.gif");
-        emoticons.put(":-?d", "1.gif");
-        emoticons.put(";-?\\)", "2.gif");
-        emoticons.put(":-?o", "3.gif");
-        emoticons.put(":-?p", "4.gif");
-        emoticons.put("\\(h\\)", "5.gif");
-        emoticons.put(":-?@", "6.gif");
-        emoticons.put(":-?\\$", "7.gif");
-        emoticons.put(":-?s", "8.gif");
-        emoticons.put(":-?\\(", "9.gif");
-        emoticons.put(":'\\(", "10.gif");
-        emoticons.put(":-?\\|", "11.gif");
-        emoticons.put("\\(6\\)", "12.gif");
-        emoticons.put("\\(a\\)", "13.gif");
-        emoticons.put("\\(l\\)", "14.gif");
-        emoticons.put("\\(u\\)", "15.gif");
-        emoticons.put("\\(m\\)", "16.gif");
-        emoticons.put("\\(@\\)", "17.gif");
-        emoticons.put("\\(&\\)", "18.gif");
-        emoticons.put("\\(s\\)", "19.gif");
-        emoticons.put("\\(\\*\\)", "20.gif");
-        emoticons.put("\\(~\\)", "21.gif");
-        emoticons.put("\\(e\\)", "22.gif");
-        emoticons.put("\\(8\\)", "23.gif");
-        emoticons.put("\\(f\\)", "24.gif");
-        emoticons.put("\\(w\\)", "25.gif");
-        emoticons.put("\\(o\\)", "26.gif");
-        emoticons.put("\\(k\\)", "27.gif");
-        emoticons.put("\\(g\\)", "28.gif");
-        emoticons.put("\\(\\^\\)", "29.gif");
-        emoticons.put("\\(p\\)", "30.gif");
-        emoticons.put("\\(i\\)", "31.gif");
-        emoticons.put("\\(c\\)", "32.gif");
-        emoticons.put("\\(t\\)", "33.gif");
-        emoticons.put("\\(\\{\\)", "34.gif");
-        emoticons.put("\\(\\}\\)", "35.gif");
-        emoticons.put("\\(b\\)", "36.gif");
-        emoticons.put("\\(d\\)", "37.gif");
-        emoticons.put("\\(z\\)", "38.gif");
-        emoticons.put("\\(x\\)", "39.gif");
-        emoticons.put("\\(y\\)", "40.gif");
-        emoticons.put("\\(n\\)", "41.gif");
-        emoticons.put(":-?\\[", "42.gif");
-        emoticons.put("\\(1\\)", "43.gif");
-        emoticons.put("\\(2\\)", "44.gif");
-        emoticons.put("\\(3\\)", "45.gif");
-        emoticons.put("\\(4\\)", "46.gif");
+       
         
     }
 
@@ -256,7 +210,7 @@ public class AresFormater
 
     private String emoticonReplace(String str)
     {
-        Iterator<String> i = emoticons.keySet().iterator();
+        Iterator<String> i = EmoticonManager.getInstance().getAll();
         String ret = str;
         String key;
         String emoticonsFolder = (System.getProperty("user.dir") + File.separator + "emoticons" + File.separator).replace("\\", "\\\\");
@@ -264,12 +218,8 @@ public class AresFormater
         {
             key = i.next();
 
-            ret = ret.replaceAll("(?i)" + key, "<img src=\"file:\\" + emoticonsFolder + emoticons.get(key) + "\"/>");
+            ret = ret.replaceAll("(?i)" + key, "<img src=\"file:\\" + emoticonsFolder + EmoticonManager.getInstance().get(key) + "\"/>");
         }
-
-        /*   String path=(System.getProperty("user.dir")+ File.separator+"emoticons"+ File.separator+"1.gif").replace(File.separator,File.separator+""+File.separator);
-         path=path.format(path);
-         return str.replaceAll(":D","<img src=\"file:\\"+path+"\"/>");*/
         return ret;
     }
 
