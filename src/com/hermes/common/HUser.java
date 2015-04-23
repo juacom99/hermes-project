@@ -193,8 +193,7 @@ public abstract class HUser
 
     public void setAvatar(ImageIcon avatar)
     {
-        //TODO add notification
-        this.avatar = avatar;
+       this.avatar = avatar;
     }
 
     public ImageIcon getAvatar()

@@ -55,13 +55,12 @@ public class P9 extends HPackage
         ByteBuffer msg = null;
         if (this.avatar != null)
         {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            BufferedImage bi = new BufferedImage(avatar.getIconWidth(), avatar.getIconHeight(), BufferedImage.TYPE_INT_RGB);
-            Graphics2D g2d = bi.createGraphics();
-            g2d.drawImage(this.avatar.getImage(), 0, 0, null);
-
             try
             {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                BufferedImage bi = new BufferedImage(avatar.getIconWidth(), avatar.getIconHeight(), BufferedImage.TYPE_INT_RGB);
+                Graphics2D g2d = bi.createGraphics();
+                g2d.drawImage(this.avatar.getImage(), 0, 0, null);
                 ImageIO.write(bi, "JPEG", baos);
                 byte[] bAvatar = baos.toByteArray();
                 msg = ByteBuffer.allocate(bAvatar.length);
@@ -71,12 +70,12 @@ public class P9 extends HPackage
             catch (IOException ex)
             {
 
-                return msg;
+                msg = ByteBuffer.allocate(0);
             }
         }
         else
         {
-            msg=ByteBuffer.allocate(0);
+            msg = ByteBuffer.allocate(0);
         }
 
         return msg;

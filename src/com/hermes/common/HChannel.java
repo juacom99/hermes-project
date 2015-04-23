@@ -7,6 +7,7 @@ package com.hermes.common;
 
 import com.hermes.common.constants.HLanguage;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,9 +30,6 @@ public class HChannel
     private int userCount;
     private String serverVersion;
     
- 
-    
-    
     public HChannel(String name, InetAddress publicIP, int port, InetAddress privateIP, String topic)
     {
         this.name = name;
@@ -42,11 +40,12 @@ public class HChannel
         this.users = new ArrayList<HUser>();
     }
 
-    public HChannel(InetAddress publicIP, int port)
+    public HChannel(InetAddress publicIP, int port) throws UnknownHostException
     {
         this.name="Channel";
         this.publicIP=publicIP;
         this.port=port;
+        this.privateIP=InetAddress.getByAddress(new byte[4]);
     }
 
     

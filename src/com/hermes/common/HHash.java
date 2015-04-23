@@ -9,6 +9,7 @@ import com.hermes.client.HCChannel;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -38,7 +39,7 @@ public class HHash
 
     }
 
-    public HChannel decode(String hashlink) throws IOException, DataFormatException
+    public HChannel decode(String hashlink) throws IOException, DataFormatException, MalformedURLException
     {
 
         HChannel ch = null;
@@ -49,6 +50,10 @@ public class HHash
         else if (hashlink.startsWith("\\\\arlnk://"))
         {
                 hashlink = hashlink.substring(10);
+        }
+        else
+        {
+            throw new MalformedURLException();
         }
 
         if (hashlink.toUpperCase().startsWith("CHATROOM:"))
