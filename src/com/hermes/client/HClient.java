@@ -38,6 +38,7 @@ import com.hermes.client.packages.tcp.P13;
 import com.hermes.client.packages.tcp.P2;
 import com.hermes.client.packages.tcp.P25;
 import com.hermes.client.packages.tcp.P4;
+import com.hermes.client.packages.tcp.P45;
 import com.hermes.client.packages.tcp.P74;
 import com.hermes.client.packages.tcp.P9;
 import com.hermes.common.HUser;
@@ -176,6 +177,16 @@ public class HClient implements Runnable, ActionListener
         if (personalMessage != null)
         {
             P13 pkg = new P13(personalMessage);
+            send(pkg);
+        }
+    }
+    
+     public void ignore(HCUser user)
+    {
+        if (user != null)
+        {
+            boolean ignore=user.ignore(user);
+            P45 pkg = new P45(user.getUsername(),ignore);
             send(pkg);
         }
     }

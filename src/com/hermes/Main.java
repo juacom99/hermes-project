@@ -11,13 +11,12 @@ import com.hermes.client.events.HClientAckEvent;
 import com.hermes.client.events.HClientAvatarEvent;
 import com.hermes.client.events.HClientEmoteEvent;
 import com.hermes.client.events.HClientEvent;
-import com.hermes.client.events.HClientJoinEvent;
 import com.hermes.client.events.HClientMessageEvent;
 import com.hermes.client.events.HClientNoSuchEvent;
-import com.hermes.client.events.HClientPartEvent;
 import com.hermes.client.events.HClientPersonalMessageEvent;
 import com.hermes.client.events.HClientTopicEvent;
 import com.hermes.client.events.HClientUrlEvent;
+import com.hermes.client.events.HClientUserEvent;
 import com.hermes.client.events.HClientUserListevent;
 import com.hermes.client.events.HClientUserUpdateEvent;
 import com.hermes.client.events.HIClientEvents;
@@ -78,18 +77,6 @@ public class Main
             }
 
             @Override
-            public void onJoin(HClientJoinEvent evt)
-            {
-                System.out.println(evt.getUser()+" has join the channel");
-            }
-
-            @Override
-            public void onPart(HClientPartEvent evt)
-            {
-                System.out.println(evt.getUser()+" has part the channel");
-            }
-
-            @Override
             public void onPersonalMessage(HClientPersonalMessageEvent evt)
             {
                
@@ -145,6 +132,24 @@ public class Main
 
             @Override
             public void onServerAck(HClientAckEvent evt)
+            {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void onJoin(HClientUserEvent evt)
+            {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void onPart(HClientUserEvent evt)
+            {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void onUserIsIgnorinYou(HClientUserEvent evt)
             {
                 throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
