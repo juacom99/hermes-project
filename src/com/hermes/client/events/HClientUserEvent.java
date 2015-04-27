@@ -11,12 +11,13 @@ import com.hermes.client.HCUser;
  *
  * @author jomartinez
  */
-public class HClientPartEvent extends HClientEvent
+public class HClientUserEvent extends HClientEvent
 {
-     private HCUser user;
+    private HCUser user;
 
-    public HClientPartEvent(HCUser user)
+    public HClientUserEvent(HCUser user)
     {
+        super();
         this.user = user;
     }
 
@@ -24,6 +25,4 @@ public class HClientPartEvent extends HClientEvent
     {
         return user;
     }
-     
-     
 }

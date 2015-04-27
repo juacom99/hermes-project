@@ -18,9 +18,9 @@ public interface HIClientEvents
     
     public void onNoSuch(HClientNoSuchEvent evt);
     
-    public void onJoin(HClientJoinEvent evt);
+    public void onJoin(HClientUserEvent evt);
     
-    public void onPart(HClientPartEvent evt);
+    public void onPart(HClientUserEvent evt);
     
     public void onPersonalMessage(HClientPersonalMessageEvent evt);
     
@@ -41,4 +41,6 @@ public interface HIClientEvents
     public void onUserUpdate(HClientUserUpdateEvent evt);
     
     public void onServerAck(HClientAckEvent evt);
+    
+    public void onUserIsIgnorinYou(HClientUserEvent evt);
 }

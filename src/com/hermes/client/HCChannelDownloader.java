@@ -5,6 +5,7 @@
  */
 package com.hermes.client;
 
+
 import com.hermes.client.events.HChannelListEvents;
 import com.hermes.client.events.HClientEvent;
 import com.hermes.common.HChannel;
@@ -142,7 +143,7 @@ public class HCChannelDownloader implements Runnable
 
                             channels.add(channel);
                             notifyAll(channel, channels.indexOf(channel));
-                            System.out.println(channel.getName() + "(" + channel.getPublicIP().getHostAddress() + ":" + channel.getPort() + ") Added");
+                           // System.out.println(channel.getName() + "(" + channel.getPublicIP().getHostAddress() + ":" + channel.getPort() + ") Added");
                             i = d.getKnownChannels().iterator();
 
                             while (i.hasNext())

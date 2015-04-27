@@ -22,13 +22,12 @@ import com.hermes.client.events.HClientAckEvent;
 import com.hermes.client.events.HClientAvatarEvent;
 import com.hermes.client.events.HClientEmoteEvent;
 import com.hermes.client.events.HClientEvent;
-import com.hermes.client.events.HClientJoinEvent;
 import com.hermes.client.events.HClientMessageEvent;
 import com.hermes.client.events.HClientNoSuchEvent;
-import com.hermes.client.events.HClientPartEvent;
 import com.hermes.client.events.HClientPersonalMessageEvent;
 import com.hermes.client.events.HClientTopicEvent;
 import com.hermes.client.events.HClientUrlEvent;
+import com.hermes.client.events.HClientUserEvent;
 import com.hermes.client.events.HClientUserListevent;
 import com.hermes.client.events.HClientUserUpdateEvent;
 import com.hermes.client.events.HIClientEvents;
@@ -77,7 +76,7 @@ public class HClient implements Runnable, ActionListener
     private Timer updateTimer;
     private boolean running;
 
-    public static final String CLIENT_VERSION = "нεямεѕ сℓιεит 0.1";//"Ares_2.3.0.3054";
+    public static final String CLIENT_VERSION = "Ares_2.3.0.3054";//"нεямεѕ сℓιεит 0.1";
 
     public HClient(HCUser user) throws IOException
     {
@@ -339,10 +338,10 @@ public class HClient implements Runnable, ActionListener
                                         com.hermes.server.packages.tcp.P20 pakg = ((com.hermes.server.packages.tcp.P20) p);
                                         HCUser us = new HCUser(pakg.getUsername(), "", pakg.getSharecount(), pakg.getLinetype(), pakg.getBrowsable(), pakg.getAge(), pakg.getGender(), pakg.getCountry(), pakg.getRegion(), pakg.getPublicIp(), pakg.getPublicPort(), pakg.getPrivateIp(), pakg.getNodeIp(), pakg.getNodePort(), (byte) 0, (byte) 0, (byte) 0);
                                         channel.addUser(us);
-                                        evt = new HClientJoinEvent(us);
+                                        evt = new HClientUserEvent(us);
                                         for (int i = 0; i < events.size(); i++)
                                         {
-                                            events.get(i).onJoin((HClientJoinEvent) evt);
+                                            events.get(i).onJoin((HClientUserEvent) evt);
                                         }
                                         break;
                                     case 22:
@@ -352,10 +351,10 @@ public class HClient implements Runnable, ActionListener
                                         if (user != null)
                                         {
                                             channel.removeUser(user);
-                                            evt = new HClientPartEvent(((HCUser) user));
+                                            evt = new HClientUserEvent(((HCUser) user));
                                             for (int i = 0; i < events.size(); i++)
                                             {
-                                                events.get(i).onPart((HClientPartEvent) evt);
+                                                events.get(i).onPart((HClientUserEvent) evt);
                                             }
                                         }
 
@@ -365,6 +364,20 @@ public class HClient implements Runnable, ActionListener
                                         for (int i = 0; i < events.size(); i++)
                                         {
                                             events.get(i).onPrivateMessage((HClientMessageEvent) evt);
+                                        }
+                                        break;
+                                    case 26:
+                                        com.hermes.server.packages.tcp.P26 pkgIgnore = ((com.hermes.server.packages.tcp.P26) p);
+                                         user = channel.find(pkgIgnore.getUsername());
+
+                                        if (user != null)
+                                        {
+                                            channel.removeUser(user);
+                                            evt = new HClientUserEvent(((HCUser) user));
+                                            for (int i = 0; i < events.size(); i++)
+                                            {
+                                                events.get(i).onUserIsIgnorinYou((HClientUserEvent) evt);
+                                            }
                                         }
                                         break;
                                     case 30:

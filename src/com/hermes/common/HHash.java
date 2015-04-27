@@ -90,14 +90,14 @@ public class HHash
             byte[] bIp = new byte[4];
 
             bb.get(bIp);
-            InetAddress privateIp = InetAddress.getByAddress(bIp);
+            InetAddress publicIp = InetAddress.getByAddress(bIp);
             byte hi = bb.get();
             byte low = bb.get();
 
             int port = (((low & 0xFF) << 8) | (hi & 0xFF));
 
             bb.get(bIp);
-            InetAddress publicIp = InetAddress.getByAddress(bIp);
+            InetAddress privateIp = InetAddress.getByAddress(bIp);
 
             int sPos = bb.position();
             int fPos = sPos;
