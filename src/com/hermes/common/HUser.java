@@ -79,6 +79,7 @@ public abstract class HUser
         this.maxUploads = maxUploads;
         this.queued = queued;
         this.ignored=new ArrayList<HUser>();
+        this.level=HAdminLevel.Normal_User;
     }
     
     public HUser(String username,short filecount, HLineType linetype, HBrowsable browsable, byte age, HGender gender, HLocation countryCode, String region, InetAddress publicIp, short dataport, InetAddress privateIp, InetAddress nodeIp, short nodePort, byte uploads, byte maxUploads, byte queued)
@@ -100,8 +101,8 @@ public abstract class HUser
         this.uploads = uploads;
         this.maxUploads = maxUploads;
         this.queued = queued;
+         this.level=HAdminLevel.Normal_User;
     }
-    
 
     public String getUsername()
     {
@@ -298,17 +299,20 @@ public abstract class HUser
         return ret;
     }
     
-     public boolean remIgnore(HUser usr)
+   public boolean isIgnoring(HUser usr)
+   {
+       return ignored.contains(usr);
+   }
+     
+     
+
+    @Override
+    public boolean equals(Object obj)
     {
-        boolean ret=false;
-        if(this.ignored.contains(usr))
-        {
-            this.ignored.remove(usr);
-            ret=true;
-        }
-        
-        return ret;
+        return getUsername().equals(((HUser)obj).getUsername());
     }
+     
+     
      
    
 }

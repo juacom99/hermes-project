@@ -62,4 +62,23 @@ public class P6 extends HPackage
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    public InetAddress getPrivateIp()
+    {
+        return privateIp;
+    }
+
+    public InetAddress getPublicIp()
+    {
+        return publicIp;
+    }
+
+    public int getPort()
+    {
+        return port;
+    }
+
+    public String getReason()
+    {
+        return reason;
+    }
 }

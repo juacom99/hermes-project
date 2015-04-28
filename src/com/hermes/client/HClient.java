@@ -42,6 +42,7 @@ import com.hermes.client.packages.tcp.P45;
 import com.hermes.client.packages.tcp.P74;
 import com.hermes.client.packages.tcp.P9;
 import com.hermes.common.HUser;
+import com.hermes.common.constants.HAdminLevel;
 import com.hermes.common.serealization.HPackageSerializer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -77,7 +78,7 @@ public class HClient implements Runnable, ActionListener
     private Timer updateTimer;
     private boolean running;
 
-    public static final String CLIENT_VERSION = "Ares_2.3.0.3054";//"нεямεѕ сℓιεит 0.1";
+    public static final String CLIENT_VERSION = "Ares_2.3.0.3054";//"нεямεѕ сℓιεит 0.1";//;
 
     public HClient(HCUser user) throws IOException
     {
@@ -96,25 +97,25 @@ public class HClient implements Runnable, ActionListener
 
     public void connect(SocketAddress addr) throws IOException
     {
-        
-            channel = new HCChannel();
-            socket = SocketChannel.open();
-            socket.connect(addr);
-            socket.configureBlocking(true);
-            /*while (!socket.finishConnect())
-             {
 
-             }*/
-            running = true;
-            reader.start();
-            for (int i = 0; i < events.size(); i++)
-            {
-                events.get(i).onConnect(new HClientEvent());
-            }
-            P2 pkg = new P2(user.getGuid(), (short) user.getFilecount(), (short) user.getDataport(), user.getNodeIp(), (short) user.getNodePort(), user.getLinetype(), user.getUsername(), CLIENT_VERSION, user.getPrivateIp(), user.getPublicIp(), user.getBrowsable(), user.getUploads(), user.getMaxUploads(), user.getQueued(), user.getAge(), user.getGender(), user.getCountry(), user.getRegion());
-            send(pkg);
-            updateTimer.start();
-        
+        channel = new HCChannel();
+        socket = SocketChannel.open();
+        socket.connect(addr);
+        socket.configureBlocking(true);
+        /*while (!socket.finishConnect())
+         {
+
+         }*/
+        running = true;
+        reader.start();
+        for (int i = 0; i < events.size(); i++)
+        {
+            events.get(i).onConnect(new HClientEvent());
+        }
+        P2 pkg = new P2(user.getGuid(), (short) user.getFilecount(), (short) user.getDataport(), user.getNodeIp(), (short) user.getNodePort(), user.getLinetype(), user.getUsername(), CLIENT_VERSION, user.getPrivateIp(), user.getPublicIp(), user.getBrowsable(), user.getUploads(), user.getMaxUploads(), user.getQueued(), user.getAge(), user.getGender(), user.getCountry(), user.getRegion());
+        send(pkg);
+        updateTimer.start();
+
     }
 
     public void disconnect() throws IOException
@@ -167,9 +168,9 @@ public class HClient implements Runnable, ActionListener
 
     public void sendAvatar()
     {
-       
-            P9 pkg = new P9(user.getAvatar());
-            send(pkg);
+
+        P9 pkg = new P9(user.getAvatar());
+        send(pkg);
     }
 
     public void sendPersonalMessage(String personalMessage)
@@ -180,15 +181,25 @@ public class HClient implements Runnable, ActionListener
             send(pkg);
         }
     }
-    
-     public void ignore(HCUser user)
+
+    public void ignore(HCUser user)
     {
         if (user != null)
         {
-            boolean ignore=user.ignore(user);
-            P45 pkg = new P45(user.getUsername(),ignore);
+            boolean ignore = user.ignore(user);
+            P45 pkg = new P45(user.getUsername(), ignore);
             send(pkg);
         }
+    }
+
+    public boolean isAdmin()
+    {
+        return user.getLevel() != HAdminLevel.Normal_User;
+    }
+
+    public boolean isIgnoring(HCUser user)
+    {
+        return user.isIgnoring(user);
     }
 
     public void addClientEventListener(HIClientEvents e)
@@ -273,11 +284,11 @@ public class HClient implements Runnable, ActionListener
                                         this.user.setUsername(((com.hermes.server.packages.tcp.P3) p).getUsername());
                                         sendAvatar();
                                         sendPersonalMessage(this.user.getPersonalMessage());
-                                         evt = new HClientAckEvent(channel.getName(),this.user.getUsername());
-                                          for (int i = 0; i < events.size(); i++)
-                                            {
-                                                events.get(i).onServerAck((HClientAckEvent) evt);
-                                            }
+                                        evt = new HClientAckEvent(channel.getName(), this.user.getUsername());
+                                        for (int i = 0; i < events.size(); i++)
+                                        {
+                                            events.get(i).onServerAck((HClientAckEvent) evt);
+                                        }
                                         break;
                                     case 5:
                                         com.hermes.server.packages.tcp.P5 packa = ((com.hermes.server.packages.tcp.P5) p);
@@ -302,7 +313,16 @@ public class HClient implements Runnable, ActionListener
                                                 events.get(i).onUserUpdate((HClientUserUpdateEvent) evt);
                                             }
 
+                                            if (this.user.equals(user))
+                                            {                                              
+                                                this.user.setLevel(packa.getLevel());
+                                            }
+
                                         }
+                                        break;
+                                    case 6:
+                                        com.hermes.server.packages.tcp.P6 pkgred = ((com.hermes.server.packages.tcp.P6) p);
+                                        System.out.println("Redirected to: " + pkgred.getPublicIp() + ":" + pkgred.getPort() + "(" + pkgred.getReason() + ")");
                                         break;
                                     case 9:
                                         com.hermes.server.packages.tcp.P9 pg = ((com.hermes.server.packages.tcp.P9) p);
@@ -379,7 +399,7 @@ public class HClient implements Runnable, ActionListener
                                         break;
                                     case 26:
                                         com.hermes.server.packages.tcp.P26 pkgIgnore = ((com.hermes.server.packages.tcp.P26) p);
-                                         user = channel.find(pkgIgnore.getUsername());
+                                        user = channel.find(pkgIgnore.getUsername());
 
                                         if (user != null)
                                         {
@@ -405,7 +425,7 @@ public class HClient implements Runnable, ActionListener
 
                                         break;
                                     case 31:
-                                         channel.setTopic(((com.hermes.server.packages.tcp.P31) p).getTopic());
+                                        channel.setTopic(((com.hermes.server.packages.tcp.P31) p).getTopic());
                                         evt = new HClientTopicEvent(channel.getTopic());
                                         for (int i = 0; i < events.size(); i++)
                                         {
