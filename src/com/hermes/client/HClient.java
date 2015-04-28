@@ -78,7 +78,7 @@ public class HClient implements Runnable, ActionListener
     private Timer updateTimer;
     private boolean running;
 
-    public static final String CLIENT_VERSION = "Ares_2.3.0.3054";//"нεямεѕ сℓιεит 0.1";//;
+    public static final String CLIENT_VERSION ="нεямεѕ сℓιεит 0.1";// "Ares_2.3.0.3054";//;//;
 
     public HClient(HCUser user) throws IOException
     {
@@ -192,9 +192,9 @@ public class HClient implements Runnable, ActionListener
         }
     }
 
-    public boolean isAdmin()
+    public HAdminLevel getAdminLevel()
     {
-        return user.getLevel() != HAdminLevel.Normal_User;
+        return user.getLevel();
     }
 
     public boolean isIgnoring(HCUser user)
@@ -262,6 +262,7 @@ public class HClient implements Runnable, ActionListener
                             payloadLeft = payloadLength;
                             id = (short) (readBuffer.get() & 0x00ff);
 
+                            System.out.println(id);
                             bPayload = new byte[payloadLength];
                         }
 
@@ -403,7 +404,6 @@ public class HClient implements Runnable, ActionListener
 
                                         if (user != null)
                                         {
-                                            channel.removeUser(user);
                                             evt = new HClientUserEvent(((HCUser) user));
                                             for (int i = 0; i < events.size(); i++)
                                             {

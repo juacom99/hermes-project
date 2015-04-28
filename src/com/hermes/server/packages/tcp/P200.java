@@ -43,6 +43,4 @@ public class P200 extends HPackage
         return user+" is "+action+"("+unknown+")";
     }
     
-    
-    
 }

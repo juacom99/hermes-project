@@ -26,7 +26,7 @@ public class P26  extends HPackage
 
     public P26(ByteBuffer bb)
     {
-       super(10);
+       super(26);
        bb.order(ByteOrder.LITTLE_ENDIAN);
        this.username = readNullTerminatedString(bb);
     }
