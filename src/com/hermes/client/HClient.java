@@ -78,7 +78,9 @@ public class HClient implements Runnable, ActionListener
     private Timer updateTimer;
     private boolean running;
 
-    public static final String CLIENT_VERSION ="нεямεѕ сℓιεит 0.1";// "Ares_2.3.0.3054";//;//;
+    
+    
+    public static final String CLIENT_VERSION ="нεямεѕ сℓιεит 0.1";//"Ares_2.3.0.3054";
 
     public HClient(HCUser user) throws IOException
     {
@@ -100,7 +102,7 @@ public class HClient implements Runnable, ActionListener
 
         channel = new HCChannel();
         socket = SocketChannel.open();
-        socket.connect(addr);
+        socket.socket().connect(addr, 1000);
         socket.configureBlocking(true);
         /*while (!socket.finishConnect())
          {
@@ -262,7 +264,6 @@ public class HClient implements Runnable, ActionListener
                             payloadLeft = payloadLength;
                             id = (short) (readBuffer.get() & 0x00ff);
 
-                            System.out.println(id);
                             bPayload = new byte[payloadLength];
                         }
 
@@ -438,6 +439,14 @@ public class HClient implements Runnable, ActionListener
                                         for (int i = 0; i < events.size(); i++)
                                         {
                                             events.get(i).onTopic((HClientTopicEvent) evt);
+                                        }
+                                        break;
+                                        
+                                    case 35:
+                                        evt = new HClientEvent();
+                                        for (int i = 0; i < events.size(); i++)
+                                        {
+                                            events.get(i).onUserListEnds(evt);
                                         }
                                         break;
                                     case 44:

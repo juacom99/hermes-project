@@ -66,7 +66,7 @@ public class AresFormater
             ret = ret.replace(((char) 2) + "6", "" + AresFormater.BOLD_CHARACTER);
             ret = ret.replaceAll(((char) 2) + "7", "" + AresFormater.UNDERLINE_CHARACTER);
             ret = ret.replaceAll(((char) 2) + "9", "" + AresFormater.ITALIC_CHARACTER);
-            ret = posterReplace(ret);
+            ret = linksReplace(ret);
             ret = foregroundReplace(ret);
             ret = backGrounddReplace(ret);
             ret = boldReplace(ret);
@@ -186,7 +186,7 @@ public class AresFormater
         return str.replaceAll(s, "<span style='font-weight:bold;'>$0</span>");
     }
 
-    private String posterReplace(String str)
+    private String linksReplace(String str)
     {
 
         String regexUrl = "((https?)://(www\\d?|[a-zA-Z0-9]+)?.[a-zA-Z0-9-]+(\\:|.)([a-zA-Z0-9.]+|(\\d+)?)([/?:].*)?)";
@@ -202,9 +202,9 @@ public class AresFormater
         m.appendTail(sb);
 
         str = sb.toString();
-        str = str.replaceAll("(?!<img src=)^(" + regexUrl + ")", "<a href='$1'></a>");
+        str = str.replaceAll(".*?(?!<img src=)^(" + regexUrl + ")", "<a href='$1'></a>");
 
-        return sb.toString();
+        return str;
 
     }
 

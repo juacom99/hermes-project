@@ -34,6 +34,8 @@ public interface HIClientEvents
     
     public void onUserList(HClientUserListevent evt);
     
+    public void onUserListEnds(HClientEvent evt);
+    
     public void onConnect(HClientEvent evt);
     
     public void onDisconnect(HClientEvent evt);
