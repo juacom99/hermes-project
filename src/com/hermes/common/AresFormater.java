@@ -7,7 +7,6 @@ package com.hermes.common;
 
 import java.awt.Color;
 import java.io.File;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -122,68 +121,19 @@ public class AresFormater
     private String boldReplace(String str)
     {
         String s = "(" + BOLD_CHARACTER + "(.*?)" + BOLD_CHARACTER + ")|(" + BOLD_CHARACTER + "(.*?)$)";
-        /* Pattern pattern = Pattern.compile(s, Pattern.UNICODE_CHARACTER_CLASS);
-         Matcher matcher = pattern.matcher(str);
-         StringBuffer sb = new StringBuffer();
-
-         String color;
-         String text;
-
-         while (matcher.find())
-         {
-         text = matcher.group(0);
-
-         matcher.appendReplacement(sb, "<span style='font-weight:bold;'>" + text + "</span>");
-         }
-
-         matcher.appendTail(sb);
-         return sb.toString();*/
-
         return str.replaceAll(s, "<span style='font-weight:bold;'>$0</span>");
     }
 
     private String underlineReplace(String str)
     {
         String s = "(" + UNDERLINE_CHARACTER + "(.*?)" + UNDERLINE_CHARACTER + ")|(" + UNDERLINE_CHARACTER + "(.*?)$)";
-        /*  Pattern pattern = Pattern.compile(s, Pattern.UNICODE_CHARACTER_CLASS);
-         Matcher matcher = pattern.matcher(str);
-         StringBuffer sb = new StringBuffer();
-
-         String text;
-
-
-         while (matcher.find())
-         {
-         text = matcher.group(0);
-
-         matcher.appendReplacement(sb, "<span style=\"text-decoration: underline;\">" + text + "</span>");
-         }
-
-         matcher.appendTail(sb);
-         return sb.toString();*/
-
-        return str.replaceAll(s, "<span style='font-weight:bold;'>$0</span>");
+        return str.replaceAll(s, "<u>$0</u>");
     }
 
     private String italicReplace(String str)
     {
         String s = "(" + ITALIC_CHARACTER + "(.*?)" + ITALIC_CHARACTER + ")|(" + ITALIC_CHARACTER + "(.*?)$)";
-        /* Pattern pattern = Pattern.compile(s, Pattern.UNICODE_CHARACTER_CLASS);
-         Matcher matcher = pattern.matcher(str);
-         StringBuffer sb = new StringBuffer();
-         String text;
-
-         while (matcher.find())
-         {
-         text = matcher.group(0);
-
-         matcher.appendReplacement(sb, "<span style=\"font-style: italic;\">" + text + "</span>");
-         }
-
-         matcher.appendTail(sb);
-         return sb.toString();*/
-
-        return str.replaceAll(s, "<span style='font-weight:bold;'>$0</span>");
+        return str.replaceAll(s, "<i>$0</i>");
     }
 
     private String linksReplace(String str)

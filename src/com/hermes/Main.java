@@ -44,7 +44,7 @@ public class Main
     public static void main(String[] args) throws UnknownHostException, IOException, Exception
     {
 
-        HChannel ch = HHash.getInstance().decode("arlnk://CHATROOM:127.0.0.1:14884|Test");
+        HChannel ch = HHash.getInstance().decode("arlnk://CHATROOM:127.0.0.1:5000|Test");
 
         System.out.println("Connecting to: " + ch.getName() + " " + ch.getPublicIP().getHostAddress() + ":" + ((int) ch.getPort()) + "  " + ch.getTopic()+" on "+new Date());
 
@@ -150,6 +150,12 @@ public class Main
 
             @Override
             public void onUserIsIgnorinYou(HClientUserEvent evt)
+            {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void onUserListEnds(HClientEvent evt)
             {
                 throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }

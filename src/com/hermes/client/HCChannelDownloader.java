@@ -266,7 +266,7 @@ public class HCChannelDownloader implements Runnable
     {
         for (int i = 0; i < events.size(); i++)
         {
-            events.get(i).onNewChannel(channel, index);
+            events.get(i).onNewChannel(channel, index,channels.size());
         }
     }
 }
