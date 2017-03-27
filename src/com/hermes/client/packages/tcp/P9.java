@@ -58,10 +58,10 @@ public class P9 extends HPackage
             try
             {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                BufferedImage bi = new BufferedImage(avatar.getIconWidth(), avatar.getIconHeight(), BufferedImage.TYPE_INT_RGB);
+                BufferedImage bi = new BufferedImage(avatar.getIconWidth(), avatar.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
                 Graphics2D g2d = bi.createGraphics();
                 g2d.drawImage(this.avatar.getImage(), 0, 0, null);
-                ImageIO.write(bi, "JPEG", baos);
+                ImageIO.write(bi, "PNG", baos);
                 byte[] bAvatar = baos.toByteArray();
                 msg = ByteBuffer.allocate(bAvatar.length);
                 msg.order(ByteOrder.LITTLE_ENDIAN);
