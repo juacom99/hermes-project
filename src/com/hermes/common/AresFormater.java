@@ -138,21 +138,9 @@ public class AresFormater
 
     private String linksReplace(String str)
     {
+        str=str.replaceAll("(?:([^\\[(?:poster|image)=]))(https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&\\/\\/=]*))","<a href=\"$2\" >$2<a/>");
 
-        String regexUrl = "((https?)://(www\\d?|[a-zA-Z0-9]+)?.[a-zA-Z0-9-]+(\\:|.)([a-zA-Z0-9.]+|(\\d+)?)([/?:].*)?)";
-        String urlValidationRegex = "\\[(poster|image)=" + regexUrl + "\\]";
-        Pattern p = Pattern.compile(urlValidationRegex);
-        Matcher m = p.matcher(str);
-        StringBuffer sb = new StringBuffer();
-        while (m.find())
-        {
-            String found = m.group(2);
-            m.appendReplacement(sb, "<img src='" + found + "'/>");
-        }
-        m.appendTail(sb);
-
-        str = sb.toString();
-        str = str.replaceAll(".*?(?!<img src=)^(" + regexUrl + ")", "<a href='$1'></a>");
+       str=str.replaceAll("\\[(?:poster|image)=((?:([^:\\/?#]+):)?(?:\\/\\/([^\\/?#]*))?([^?#]*\\.(?:jpn?g|gif|png))(?:\\?([^#]*))?(?:#(.*))?)\\]","<img src=\"$1\"/>");
 
         return str;
 

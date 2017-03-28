@@ -483,7 +483,7 @@ public class HClient implements Runnable, ActionListener
                     readBuffer.compact();
                 } else
                 {
-                    disconnect();
+                   // disconnect();
                     //TODO clean UP;
                     payload = null;
                     payloadLeft = 0;

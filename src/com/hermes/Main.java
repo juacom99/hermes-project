@@ -14,6 +14,7 @@ import com.hermes.client.events.HClientEvent;
 import com.hermes.client.events.HClientMessageEvent;
 import com.hermes.client.events.HClientNoSuchEvent;
 import com.hermes.client.events.HClientPersonalMessageEvent;
+import com.hermes.client.events.HClientRedirectedEvent;
 import com.hermes.client.events.HClientTopicEvent;
 import com.hermes.client.events.HClientUrlEvent;
 import com.hermes.client.events.HClientUserEvent;
@@ -156,6 +157,12 @@ public class Main
 
             @Override
             public void onUserListEnds(HClientEvent evt)
+            {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void onClientRected(HClientRedirectedEvent evt)
             {
                 throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }

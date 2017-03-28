@@ -45,4 +45,6 @@ public interface HIClientEvents
     public void onServerAck(HClientAckEvent evt);
     
     public void onUserIsIgnorinYou(HClientUserEvent evt);
+    
+    public void onClientRected(HClientRedirectedEvent evt);
 }
