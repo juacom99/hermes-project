@@ -114,7 +114,7 @@ public class P2 extends HPackage {
         byte[] bVersion=this.version.getBytes(charset);
         byte[] bRegion= this.region.getBytes(charset);
 
-        int length = 48 + bUsername.length+bVersion.length;
+        int length = 49 + bUsername.length+bVersion.length;
 
         if (!this.region.isEmpty())
         {
@@ -150,6 +150,8 @@ public class P2 extends HPackage {
             msg.put(bRegion);
             msg.put((byte) 0);
         }
+        //features
+        msg.put((byte)0);
 
         return msg;
     }

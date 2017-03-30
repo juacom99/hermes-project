@@ -1,4 +1,4 @@
- /*
+/*
  Hermes Project - Chat client/server for Ares Galaxy P2P
  Copyright (C) 2011  Joaquin Martinez (juacom04@gmail.com)
 
@@ -25,6 +25,7 @@ import com.hermes.client.events.HClientEvent;
 import com.hermes.client.events.HClientMessageEvent;
 import com.hermes.client.events.HClientNoSuchEvent;
 import com.hermes.client.events.HClientPersonalMessageEvent;
+import com.hermes.client.events.HClientRedirectedEvent;
 import com.hermes.client.events.HClientTopicEvent;
 import com.hermes.client.events.HClientUrlEvent;
 import com.hermes.client.events.HClientUserEvent;
@@ -65,8 +66,7 @@ import javax.swing.Timer;
  *
  * @author joaquin
  */
-public class HClient implements Runnable, ActionListener
-{
+public class HClient implements Runnable, ActionListener {
 
     private HCUser user;
     private HCChannel channel;
@@ -78,12 +78,10 @@ public class HClient implements Runnable, ActionListener
     private Timer updateTimer;
     private boolean running;
 
+    public static final String CLIENT_VERSION = "нεямεѕ сℓιεит 0.1";//"Ares_2.3.0.3054";
     
-    
-    public static final String CLIENT_VERSION ="нεямεѕ сℓιεит 0.1";//"Ares_2.3.0.3054";
 
-    public HClient(HCUser user) throws IOException
-    {
+    public HClient(HCUser user) throws IOException {
         this.user = user;
         this.reader = new Thread(this);
         this.events = new ArrayList<>();
@@ -91,27 +89,24 @@ public class HClient implements Runnable, ActionListener
         this.running = false;
     }
 
-    public void connect(InetAddress ip, int port) throws IOException
-    {
+    public void connect(InetAddress ip, int port) throws IOException {
         InetSocketAddress addr = new InetSocketAddress(ip, port);
         connect(addr);
     }
 
-    public void connect(SocketAddress addr) throws IOException
-    {
+    public void connect(SocketAddress addr) throws IOException {
 
         channel = new HCChannel();
         socket = SocketChannel.open();
         socket.socket().connect(addr, 1000);
         socket.configureBlocking(true);
-        /*while (!socket.finishConnect())
+        while (!socket.finishConnect())
          {
 
-         }*/
+         }
         running = true;
         reader.start();
-        for (int i = 0; i < events.size(); i++)
-        {
+        for (int i = 0; i < events.size(); i++) {
             events.get(i).onConnect(new HClientEvent());
         }
         P2 pkg = new P2(user.getGuid(), (short) user.getFilecount(), (short) user.getDataport(), user.getNodeIp(), (short) user.getNodePort(), user.getLinetype(), user.getUsername(), CLIENT_VERSION, user.getPrivateIp(), user.getPublicIp(), user.getBrowsable(), user.getUploads(), user.getMaxUploads(), user.getQueued(), user.getAge(), user.getGender(), user.getCountry(), user.getRegion());
@@ -120,114 +115,92 @@ public class HClient implements Runnable, ActionListener
 
     }
 
-    public void disconnect() throws IOException
-    {
+    public void disconnect() throws IOException {
         running = false;
         updateTimer.stop();
         socket.close();
-        for (int i = 0; i < events.size(); i++)
-        {
+        for (int i = 0; i < events.size(); i++) {
             events.get(i).onDisconnect(new HClientEvent());
         }
 
     }
 
-    public void send(HPackage pkg)
-    {
-        try
-        {
+    public void send(HPackage pkg) {
+        try {
             socket.write(HPackageSerializer.getInstance().getBytes(pkg));
-        } catch (IOException ex)
-        {
+        } catch (IOException ex) {
             System.err.println(ex.getMessage());
         }
 
     }
 
-    public void sendMessage(String message) throws IOException
-    {
+    public void sendMessage(String message) throws IOException {
         P10 pkg = new P10(message);
         send(pkg);
     }
 
-    public void sendEmote(String emote)
-    {
+    public void sendEmote(String emote) {
         P11 pkg = new P11(emote);
         send(pkg);
     }
 
-    public void sendCommand(String command)
-    {
+    public void sendCommand(String command) {
         P74 pkg = new P74(command);
         send(pkg);
     }
 
-    public void sendPM(String to, String message)
-    {
+    public void sendPM(String to, String message) {
         P25 pkg = new P25(to, message);
         send(pkg);
     }
 
-    public void sendAvatar()
-    {
+    public void sendAvatar() {
 
         P9 pkg = new P9(user.getAvatar());
         send(pkg);
     }
 
-    public void sendPersonalMessage(String personalMessage)
-    {
-        if (personalMessage != null)
-        {
+    public void sendPersonalMessage(String personalMessage) {
+        if (personalMessage != null) {
             P13 pkg = new P13(personalMessage);
             send(pkg);
         }
     }
 
-    public void ignore(HCUser user)
-    {
-        if (user != null)
-        {
+    public void ignore(HCUser user) {
+        if (user != null) {
             boolean ignore = user.ignore(user);
             P45 pkg = new P45(user.getUsername(), ignore);
             send(pkg);
         }
     }
 
-    public HAdminLevel getAdminLevel()
-    {
+    public HAdminLevel getAdminLevel() {
         return user.getLevel();
     }
 
-    public boolean isIgnoring(HCUser user)
-    {
+    public boolean isIgnoring(HCUser user) {
         return user.isIgnoring(user);
     }
 
-    public void addClientEventListener(HIClientEvents e)
-    {
+    public void addClientEventListener(HIClientEvents e) {
         events.add(e);
     }
 
-    public void removeClientEventListener(HIClientEvents e)
-    {
-        if (events.contains(e))
-        {
+    public void removeClientEventListener(HIClientEvents e) {
+        if (events.contains(e)) {
             events.remove(e);
         }
     }
 
-    private void notifice(HPackage p)
-    {
-        for (int i = 0; i < events.size(); i++)
-        {
+    private void notifice(HPackage p) {
+        for (int i = 0; i < events.size(); i++) {
 
         }
     }
 
     @Override
-    public void run()
-    {
+    public void run() {
 
         readBuffer = ByteBuffer.allocate(BUFFER_SIZE);
         readBuffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -240,318 +213,279 @@ public class HClient implements Runnable, ActionListener
         int payloadLeft = 0;
         byte hi, low;
         HUser user;
-        try
-        {
+        try {
 
-            while (running)
-            {
-                readed = socket.read(readBuffer);
+            while (running) {
+                if (socket.isOpen()) {
+                    readed = socket.read(readBuffer);
 
-                if (readed != -1)
-                {
+                    if (readed != -1) {
 
-                    readBuffer.flip();
+                        readBuffer.flip();
 
-                    while (readBuffer.remaining() >= 3)
-                    {
+                        while (readBuffer.remaining() >= 3) {
 
-                        if (payloadLeft == 0)
-                        {
-                            hi = readBuffer.get();
-                            low = readBuffer.get();
+                            if (payloadLeft == 0) {
+                                hi = readBuffer.get();
+                                low = readBuffer.get();
 
-                            payloadLength = (((low & 0xFF) << 8) | (hi & 0xFF));
-                            payloadLeft = payloadLength;
-                            id = (short) (readBuffer.get() & 0x00ff);
+                                payloadLength = (((low & 0xFF) << 8) | (hi & 0xFF));
+                                payloadLeft = payloadLength;
+                                id = (short) (readBuffer.get() & 0x00ff);
 
-                            bPayload = new byte[payloadLength];
-                        }
-
-                        if (readBuffer.remaining() >= payloadLeft)
-                        {
-                            readBuffer.get(bPayload, payloadLength - payloadLeft, payloadLeft);
-
-                            payload = ByteBuffer.wrap(bPayload);
-                            payload.order(ByteOrder.LITTLE_ENDIAN);
-
-                            try
-                            {
-                                p = deserialize(id, payload);
-                                HClientEvent evt;
-                                //TODO Replace with Dispacher
-                                switch (p.getId())
-                                {
-                                    case 3:
-                                        channel.setName(((com.hermes.server.packages.tcp.P3) p).getRoomname());
-                                        this.user.setUsername(((com.hermes.server.packages.tcp.P3) p).getUsername());
-                                        sendAvatar();
-                                        sendPersonalMessage(this.user.getPersonalMessage());
-                                        evt = new HClientAckEvent(channel.getName(), this.user.getUsername());
-                                        for (int i = 0; i < events.size(); i++)
-                                        {
-                                            events.get(i).onServerAck((HClientAckEvent) evt);
-                                        }
-                                        break;
-                                    case 5:
-                                        com.hermes.server.packages.tcp.P5 packa = ((com.hermes.server.packages.tcp.P5) p);
-                                        user = channel.find(packa.getUsername());
-                                        if (user != null)
-                                        {
-                                            user.setFilecount(packa.getFilesCount());
-                                            user.setBrowsable(packa.getBrowsable());
-                                            user.setNodeIp(packa.getNodeIp());
-                                            user.setNodePort(packa.getNodePort());
-                                            user.setPublicIp(packa.getPublicIp());
-                                            user.setLevel(packa.getLevel());
-                                            user.setAge(packa.getAge());
-                                            user.setGender(packa.getGender());
-                                            user.setCountry(packa.getCountry());
-                                            user.setRegion(packa.getRegion());
-
-                                            evt = new HClientUserUpdateEvent(packa.getUsername(), packa.getFilesCount(), packa.getBrowsable(), packa.getNodeIp(), packa.getNodePort(), packa.getPublicIp(), packa.getLevel(), packa.getAge(), packa.getGender(), packa.getCountry(), packa.getRegion());
-
-                                            for (int i = 0; i < events.size(); i++)
-                                            {
-                                                events.get(i).onUserUpdate((HClientUserUpdateEvent) evt);
-                                            }
-
-                                            if (this.user.equals(user))
-                                            {                                              
-                                                this.user.setLevel(packa.getLevel());
-                                            }
-
-                                        }
-                                        break;
-                                    case 6:
-                                        com.hermes.server.packages.tcp.P6 pkgred = ((com.hermes.server.packages.tcp.P6) p);
-                                        System.out.println("Redirected to: " + pkgred.getPublicIp() + ":" + pkgred.getPort() + "(" + pkgred.getReason() + ")");
-                                        break;
-                                    case 9:
-                                        com.hermes.server.packages.tcp.P9 pg = ((com.hermes.server.packages.tcp.P9) p);
-                                        user = channel.find(pg.getUsername());
-                                        if (user != null)
-                                        {
-                                            user.setAvatar(pg.getAvatar());
-                                            evt = new HClientAvatarEvent(pg.getUsername(), pg.getAvatar());
-                                            for (int i = 0; i < events.size(); i++)
-                                            {
-                                                events.get(i).onAvatar((HClientAvatarEvent) evt);
-                                            }
-                                        }
-                                        break;
-                                    case 10:
-
-                                        evt = new HClientMessageEvent(((com.hermes.server.packages.tcp.P10) p).getSender(), ((com.hermes.server.packages.tcp.P10) p).getMessage());
-                                        for (int i = 0; i < events.size(); i++)
-                                        {
-                                            events.get(i).onPublicMessage((HClientMessageEvent) evt);
-                                        }
-                                        break;
-                                    case 11:
-                                        evt = new HClientEmoteEvent(((com.hermes.server.packages.tcp.P11) p).getUsername(), ((com.hermes.server.packages.tcp.P11) p).getText());
-                                        for (int i = 0; i < events.size(); i++)
-                                        {
-                                            events.get(i).onEmote((HClientEmoteEvent) evt);
-                                        }
-                                        break;
-                                    case 13:
-                                        com.hermes.server.packages.tcp.P13 pkg = ((com.hermes.server.packages.tcp.P13) p);
-                                        user = channel.find(pkg.getUsername());
-                                        if (user != null)
-                                        {
-                                            user.setPersonalMessage(pkg.getPersonalMessage());
-                                            evt = new HClientPersonalMessageEvent(pkg.getUsername(), user.getPersonalMessage());
-                                            for (int i = 0; i < events.size(); i++)
-                                            {
-                                                events.get(i).onPersonalMessage((HClientPersonalMessageEvent) evt);
-                                            }
-                                        }
-                                        break;
-                                    case 20:
-                                        com.hermes.server.packages.tcp.P20 pakg = ((com.hermes.server.packages.tcp.P20) p);
-                                        HCUser us = new HCUser(pakg.getUsername(), "", pakg.getSharecount(), pakg.getLinetype(), pakg.getBrowsable(), pakg.getAge(), pakg.getGender(), pakg.getCountry(), pakg.getRegion(), pakg.getPublicIp(), pakg.getPublicPort(), pakg.getPrivateIp(), pakg.getNodeIp(), pakg.getNodePort(), (byte) 0, (byte) 0, (byte) 0);
-                                        channel.addUser(us);
-                                        evt = new HClientUserEvent(us);
-                                        for (int i = 0; i < events.size(); i++)
-                                        {
-                                            events.get(i).onJoin((HClientUserEvent) evt);
-                                        }
-                                        break;
-                                    case 22:
-                                        String userName = ((com.hermes.server.packages.tcp.P22) p).getUser();
-                                        user = channel.find(userName);
-
-                                        if (user != null)
-                                        {
-                                            channel.removeUser(user);
-                                            evt = new HClientUserEvent(((HCUser) user));
-                                            for (int i = 0; i < events.size(); i++)
-                                            {
-                                                events.get(i).onPart((HClientUserEvent) evt);
-                                            }
-                                        }
-
-                                        break;
-                                    case 25:
-                                        evt = new HClientMessageEvent(((com.hermes.server.packages.tcp.P25) p).getSender(), ((com.hermes.server.packages.tcp.P25) p).getMessage());
-                                        for (int i = 0; i < events.size(); i++)
-                                        {
-                                            events.get(i).onPrivateMessage((HClientMessageEvent) evt);
-                                        }
-                                        break;
-                                    case 26:
-                                        com.hermes.server.packages.tcp.P26 pkgIgnore = ((com.hermes.server.packages.tcp.P26) p);
-                                        user = channel.find(pkgIgnore.getUsername());
-
-                                        if (user != null)
-                                        {
-                                            evt = new HClientUserEvent(((HCUser) user));
-                                            for (int i = 0; i < events.size(); i++)
-                                            {
-                                                events.get(i).onUserIsIgnorinYou((HClientUserEvent) evt);
-                                            }
-                                        }
-                                        break;
-                                    case 30:
-                                        com.hermes.server.packages.tcp.P30 pk = ((com.hermes.server.packages.tcp.P30) p);
-                                        HCUser u = new HCUser(pk.getUsername(), "", pk.getSharecount(), pk.getLinetype(), pk.getBrowsable(), pk.getAge(), pk.getGender(), pk.getCountry(), pk.getRegion(), pk.getPublicIp(), pk.getPublicPort(), pk.getPrivateIp(), pk.getNodeIp(), pk.getNodePort(), (byte) 0, (byte) 0, (byte) 0);
-                                        u.setLevel(pk.getAdminLevel());
-
-                                        evt = new HClientUserListevent(u);
-                                        channel.addUser(u);
-                                        for (int i = 0; i < events.size(); i++)
-                                        {
-                                            events.get(i).onUserList((HClientUserListevent) evt);
-                                        }
-
-                                        break;
-                                    case 31:
-                                        channel.setTopic(((com.hermes.server.packages.tcp.P31) p).getTopic());
-                                        evt = new HClientTopicEvent(channel.getTopic());
-                                        for (int i = 0; i < events.size(); i++)
-                                        {
-                                            events.get(i).onTopic((HClientTopicEvent) evt);
-                                        }
-                                        break;
-                                    case 32:
-                                        channel.setTopic(((com.hermes.server.packages.tcp.P32) p).getTopic());
-                                        evt = new HClientTopicEvent(channel.getTopic());
-                                        for (int i = 0; i < events.size(); i++)
-                                        {
-                                            events.get(i).onTopic((HClientTopicEvent) evt);
-                                        }
-                                        break;
-                                        
-                                    case 35:
-                                        evt = new HClientEvent();
-                                        for (int i = 0; i < events.size(); i++)
-                                        {
-                                            events.get(i).onUserListEnds(evt);
-                                        }
-                                        break;
-                                    case 44:
-                                        evt = new HClientNoSuchEvent(((com.hermes.server.packages.tcp.P44) p).getMessage());
-                                        for (int i = 0; i < events.size(); i++)
-                                        {
-                                            events.get(i).onNoSuch((HClientNoSuchEvent) evt);
-                                        }
-                                        break;
-                                    case 73:
-                                        com.hermes.server.packages.tcp.P73 pkga = ((com.hermes.server.packages.tcp.P73) p);
-                                        this.channel.setUlr(pkga.getUrl(), pkga.getCaption());
-                                        evt = new HClientUrlEvent(pkga.getUrl(), pkga.getCaption());
-                                        for (int i = 0; i < events.size(); i++)
-                                        {
-                                            events.get(i).onURL((HClientUrlEvent) evt);
-                                        }
-                                        break;
-
-                                }
-                            } catch (Exception ex)
-                            {
-                                int i = 0;
+                                bPayload = new byte[payloadLength];
                             }
-                            payloadLeft = 0;
 
-                        } else
-                        {
+                            if (readBuffer.remaining() >= payloadLeft) {
+                                readBuffer.get(bPayload, payloadLength - payloadLeft, payloadLeft);
 
-                            payloadLeft = payloadLeft - readBuffer.remaining();
-                            readBuffer.get(bPayload, 0, readBuffer.remaining());
+                                payload = ByteBuffer.wrap(bPayload);
+                                payload.order(ByteOrder.LITTLE_ENDIAN);
+
+                                try {
+                                    p = deserialize(id, payload);
+                                    HClientEvent evt;
+                                    //TODO Replace with Dispacher
+                                    switch (p.getId()) {
+                                        case 3:
+                                            channel.setName(((com.hermes.server.packages.tcp.P3) p).getRoomname());
+                                            this.user.setUsername(((com.hermes.server.packages.tcp.P3) p).getUsername());
+                                            sendAvatar();
+                                            sendPersonalMessage(this.user.getPersonalMessage());
+                                            evt = new HClientAckEvent(channel.getName(), this.user.getUsername());
+                                            for (int i = 0; i < events.size(); i++) {
+                                                events.get(i).onServerAck((HClientAckEvent) evt);
+                                            }
+                                            break;
+                                        case 5:
+                                            com.hermes.server.packages.tcp.P5 packa = ((com.hermes.server.packages.tcp.P5) p);
+                                            user = channel.find(packa.getUsername());
+                                            if (user != null) {
+                                                user.setFilecount(packa.getFilesCount());
+                                                user.setBrowsable(packa.getBrowsable());
+                                                user.setNodeIp(packa.getNodeIp());
+                                                user.setNodePort(packa.getNodePort());
+                                                user.setPublicIp(packa.getPublicIp());
+                                                user.setLevel(packa.getLevel());
+                                                user.setAge(packa.getAge());
+                                                user.setGender(packa.getGender());
+                                                user.setCountry(packa.getCountry());
+                                                user.setRegion(packa.getRegion());
+
+                                                evt = new HClientUserUpdateEvent(packa.getUsername(), packa.getFilesCount(), packa.getBrowsable(), packa.getNodeIp(), packa.getNodePort(), packa.getPublicIp(), packa.getLevel(), packa.getAge(), packa.getGender(), packa.getCountry(), packa.getRegion());
+
+                                                for (int i = 0; i < events.size(); i++) {
+                                                    events.get(i).onUserUpdate((HClientUserUpdateEvent) evt);
+                                                }
+
+                                                if (this.user.equals(user)) {
+                                                    this.user.setLevel(packa.getLevel());
+                                                }
+
+                                            }
+                                            break;
+                                        case 6:
+                                            com.hermes.server.packages.tcp.P6 pkgred = ((com.hermes.server.packages.tcp.P6) p);
+                                            System.out.println("Redirected to: " + pkgred.getPublicIp() + ":" + pkgred.getPort() + "(" + pkgred.getReason() + ")");
+                                            HClientRedirectedEvent redEvt = new HClientRedirectedEvent(pkgred.getPublicIp(), pkgred.getPort(), pkgred.getReason());
+
+                                            for (int i = 0; i < events.size(); i++) {
+                                                events.get(i).onClientRected((HClientRedirectedEvent) redEvt);
+                                            }
+
+                                            break;
+                                        case 9:
+                                            com.hermes.server.packages.tcp.P9 pg = ((com.hermes.server.packages.tcp.P9) p);
+                                            user = channel.find(pg.getUsername());
+                                            if (user != null) {
+                                                user.setAvatar(pg.getAvatar());
+                                                evt = new HClientAvatarEvent(pg.getUsername(), pg.getAvatar());
+                                                for (int i = 0; i < events.size(); i++) {
+                                                    events.get(i).onAvatar((HClientAvatarEvent) evt);
+                                                }
+                                            }
+                                            break;
+                                        case 10:
+
+                                            evt = new HClientMessageEvent(((com.hermes.server.packages.tcp.P10) p).getSender(), ((com.hermes.server.packages.tcp.P10) p).getMessage());
+                                            for (int i = 0; i < events.size(); i++) {
+                                                events.get(i).onPublicMessage((HClientMessageEvent) evt);
+                                            }
+                                            break;
+                                        case 11:
+                                            evt = new HClientEmoteEvent(((com.hermes.server.packages.tcp.P11) p).getUsername(), ((com.hermes.server.packages.tcp.P11) p).getText());
+                                            for (int i = 0; i < events.size(); i++) {
+                                                events.get(i).onEmote((HClientEmoteEvent) evt);
+                                            }
+                                            break;
+                                        case 13:
+                                            com.hermes.server.packages.tcp.P13 pkg = ((com.hermes.server.packages.tcp.P13) p);
+                                            user = channel.find(pkg.getUsername());
+                                            if (user != null) {
+                                                user.setPersonalMessage(pkg.getPersonalMessage());
+                                                evt = new HClientPersonalMessageEvent(pkg.getUsername(), user.getPersonalMessage());
+                                                for (int i = 0; i < events.size(); i++) {
+                                                    events.get(i).onPersonalMessage((HClientPersonalMessageEvent) evt);
+                                                }
+                                            }
+                                            break;
+                                        case 20:
+                                            com.hermes.server.packages.tcp.P20 pakg = ((com.hermes.server.packages.tcp.P20) p);
+                                            HCUser us = new HCUser(pakg.getUsername(), "", pakg.getSharecount(), pakg.getLinetype(), pakg.getBrowsable(), pakg.getAge(), pakg.getGender(), pakg.getCountry(), pakg.getRegion(), pakg.getPublicIp(), pakg.getPublicPort(), pakg.getPrivateIp(), pakg.getNodeIp(), pakg.getNodePort(), (byte) 0, (byte) 0, (byte) 0);
+                                            channel.addUser(us);
+                                            evt = new HClientUserEvent(us);
+                                            for (int i = 0; i < events.size(); i++) {
+                                                events.get(i).onJoin((HClientUserEvent) evt);
+                                            }
+                                            break;
+                                        case 22:
+                                            String userName = ((com.hermes.server.packages.tcp.P22) p).getUser();
+                                            user = channel.find(userName);
+
+                                            if (user != null) {
+                                                channel.removeUser(user);
+                                                evt = new HClientUserEvent(((HCUser) user));
+                                                for (int i = 0; i < events.size(); i++) {
+                                                    events.get(i).onPart((HClientUserEvent) evt);
+                                                }
+                                            }
+
+                                            break;
+                                        case 25:
+                                            evt = new HClientMessageEvent(((com.hermes.server.packages.tcp.P25) p).getSender(), ((com.hermes.server.packages.tcp.P25) p).getMessage());
+                                            for (int i = 0; i < events.size(); i++) {
+                                                events.get(i).onPrivateMessage((HClientMessageEvent) evt);
+                                            }
+                                            break;
+                                        case 26:
+                                            com.hermes.server.packages.tcp.P26 pkgIgnore = ((com.hermes.server.packages.tcp.P26) p);
+                                            user = channel.find(pkgIgnore.getUsername());
+
+                                            if (user != null) {
+                                                evt = new HClientUserEvent(((HCUser) user));
+                                                for (int i = 0; i < events.size(); i++) {
+                                                    events.get(i).onUserIsIgnorinYou((HClientUserEvent) evt);
+                                                }
+                                            }
+                                            break;
+                                        case 30:
+                                            com.hermes.server.packages.tcp.P30 pk = ((com.hermes.server.packages.tcp.P30) p);
+                                            HCUser u = new HCUser(pk.getUsername(), "", pk.getSharecount(), pk.getLinetype(), pk.getBrowsable(), pk.getAge(), pk.getGender(), pk.getCountry(), pk.getRegion(), pk.getPublicIp(), pk.getPublicPort(), pk.getPrivateIp(), pk.getNodeIp(), pk.getNodePort(), (byte) 0, (byte) 0, (byte) 0);
+                                            u.setLevel(pk.getAdminLevel());
+
+                                            evt = new HClientUserListevent(u);
+                                            channel.addUser(u);
+                                            for (int i = 0; i < events.size(); i++) {
+                                                events.get(i).onUserList((HClientUserListevent) evt);
+                                            }
+
+                                            break;
+                                        case 31:
+                                            channel.setTopic(((com.hermes.server.packages.tcp.P31) p).getTopic());
+                                            evt = new HClientTopicEvent(channel.getTopic());
+                                            for (int i = 0; i < events.size(); i++) {
+                                                events.get(i).onTopic((HClientTopicEvent) evt);
+                                            }
+                                            break;
+                                        case 32:
+                                            channel.setTopic(((com.hermes.server.packages.tcp.P32) p).getTopic());
+                                            evt = new HClientTopicEvent(channel.getTopic());
+                                            for (int i = 0; i < events.size(); i++) {
+                                                events.get(i).onTopic((HClientTopicEvent) evt);
+                                            }
+                                            break;
+
+                                        case 35:
+                                            evt = new HClientEvent();
+                                            for (int i = 0; i < events.size(); i++) {
+                                                events.get(i).onUserListEnds(evt);
+                                            }
+                                            break;
+                                        case 44:
+                                            evt = new HClientNoSuchEvent(((com.hermes.server.packages.tcp.P44) p).getMessage());
+                                            for (int i = 0; i < events.size(); i++) {
+                                                events.get(i).onNoSuch((HClientNoSuchEvent) evt);
+                                            }
+                                            break;
+                                        case 73:
+                                            com.hermes.server.packages.tcp.P73 pkga = ((com.hermes.server.packages.tcp.P73) p);
+                                            this.channel.setUlr(pkga.getUrl(), pkga.getCaption());
+                                            evt = new HClientUrlEvent(pkga.getUrl(), pkga.getCaption());
+                                            for (int i = 0; i < events.size(); i++) {
+                                                events.get(i).onURL((HClientUrlEvent) evt);
+                                            }
+                                            break;
+
+                                    }
+                                } catch (Exception ex) {
+                                    int i = 0;
+                                }
+                                payloadLeft = 0;
+
+                            } else {
+
+                                payloadLeft = payloadLeft - readBuffer.remaining();
+                                readBuffer.get(bPayload, 0, readBuffer.remaining());
+                            }
                         }
+                        readBuffer.compact();
+                    } else {
+                        // disconnect();
+                        //TODO clean UP;
+                        payload = null;
+                        payloadLeft = 0;
+                        payloadLength = 0;
+                        id = 0;
+                        bPayload = null;
                     }
-                    readBuffer.compact();
-                } else
-                {
-                   // disconnect();
-                    //TODO clean UP;
-                    payload = null;
-                    payloadLeft = 0;
-                    payloadLength = 0;
-                    id = 0;
-                    bPayload = null;
                 }
             }
-        } catch (IOException ex)
-        {
+        } catch (IOException ex) {
             Logger.getLogger(HClient.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
 
-    private HPackage deserialize(int id, ByteBuffer payload)
-    {
+    private HPackage deserialize(int id, ByteBuffer payload) {
         Class<?> clazz = null;
         HPackage p = null;
-        try
-        {
+        try {
             clazz = Class.forName("com.hermes.server.packages.tcp.P" + id);
 
-        } catch (ClassNotFoundException ex)
-        {
-            try
-            {
+        } catch (ClassNotFoundException ex) {
+            try {
                 clazz = Class.forName("com.hermes.server.packages.tcp.PDefault");
 
-            } catch (ClassNotFoundException ex1)
-            {
+            } catch (ClassNotFoundException ex1) {
                 Logger.getLogger(HClient.class
                         .getName()).log(Level.SEVERE, null, ex1);
             }
 
         }
 
-        if (clazz != null)
-        {
+        if (clazz != null) {
             Constructor<?> constr;
 
-            try
-            {
+            try {
                 constr = clazz.getConstructor(ByteBuffer.class
                 );
                 p = (HPackage) constr.newInstance(payload);
-            } catch (NoSuchMethodException ex)
-            {
+            } catch (NoSuchMethodException ex) {
                 Logger.getLogger(HClient.class
                         .getName()).log(Level.SEVERE, null, id + " " + ex);
-            } catch (SecurityException ex)
-            {
+            } catch (SecurityException ex) {
                 Logger.getLogger(HClient.class
                         .getName()).log(Level.SEVERE, null, ex);
-            } catch (InstantiationException ex)
-            {
+            } catch (InstantiationException ex) {
                 Logger.getLogger(HClient.class
                         .getName()).log(Level.SEVERE, null, ex);
-            } catch (IllegalAccessException ex)
-            {
+            } catch (IllegalAccessException ex) {
                 Logger.getLogger(HClient.class
                         .getName()).log(Level.SEVERE, null, ex);
-            } catch (IllegalArgumentException ex)
-            {
+            } catch (IllegalArgumentException ex) {
                 Logger.getLogger(HClient.class
                         .getName()).log(Level.SEVERE, null, ex);
-            } catch (InvocationTargetException ex)
-            {
+            } catch (InvocationTargetException ex) {
                 Logger.getLogger(HClient.class
                         .getName()).log(Level.SEVERE, null, ex);
             }
@@ -563,14 +497,12 @@ public class HClient implements Runnable, ActionListener
     }
 
     @Override
-    public void actionPerformed(ActionEvent e)
-    {
+    public void actionPerformed(ActionEvent e) {
         P4 pkg = new P4((short) user.getFilecount(), user.getBrowsable(), user.getNodeIp(), (short) user.getNodePort(), user.getPrivateIp(), user.getAge(), user.getGender(), user.getCountry(), user.getRegion());
         send(pkg);
     }
 
-    public void setUser(HCUser user)
-    {
+    public void setUser(HCUser user) {
         this.user = user;
     }
 }
