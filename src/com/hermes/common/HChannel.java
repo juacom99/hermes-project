@@ -6,6 +6,7 @@
 package com.hermes.common;
 
 import com.hermes.common.constants.HLanguage;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -172,6 +173,11 @@ public class HChannel
     public boolean equals(Object obj)
     {
         return ((HChannel)obj).publicIP.equals(this.publicIP) && ((HChannel)obj).port==this.port;
+    }
+    
+    public String getHash() throws UnknownHostException, IOException
+    {
+        return HHash.getInstance().encode(this);
     }
      
      

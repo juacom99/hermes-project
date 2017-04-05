@@ -65,9 +65,10 @@ public class AresFormater
             ret = ret.replace(((char) 2) + "6", "" + AresFormater.BOLD_CHARACTER);
             ret = ret.replaceAll(((char) 2) + "7", "" + AresFormater.UNDERLINE_CHARACTER);
             ret = ret.replaceAll(((char) 2) + "9", "" + AresFormater.ITALIC_CHARACTER);
-            ret = linksReplace(ret);
+            
             ret = foregroundReplace(ret);
-            ret = backGrounddReplace(ret);
+            ret = backGrounddReplace(ret);            
+            ret = linksReplace(ret);
             ret = boldReplace(ret);
             ret = underlineReplace(ret);
             ret = italicReplace(ret);
@@ -138,7 +139,7 @@ public class AresFormater
 
     private String linksReplace(String str)
     {
-        str=str.replaceAll("(?:([^\\[(?:poster|image)=]))(https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&\\/\\/=]*))","<a href=\"$2\" >$2<a/>");
+        str=str.replaceAll("[^\\[(?:poster|image)=](https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&\\/\\/=]*))","<a href=\"$1\" >$1<a/>");
 
        str=str.replaceAll("\\[(?:poster|image)=((?:([^:\\/?#]+):)?(?:\\/\\/([^\\/?#]*))?([^?#]*\\.(?:jpn?g|gif|png))(?:\\?([^#]*))?(?:#(.*))?)\\]","<img src=\"$1\"/>");
 

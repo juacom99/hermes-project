@@ -216,7 +216,7 @@ public class HClient implements Runnable, ActionListener {
         try {
 
             while (running) {
-                if (socket.isOpen()) {
+                if (socket.isOpen() && socket.isBlocking()) {
                     readed = socket.read(readBuffer);
 
                     if (readed != -1) {
