@@ -176,7 +176,8 @@ public class HClient implements Runnable, ActionListener {
     }
 
     public HAdminLevel getAdminLevel() {
-        return user.getLevel();
+       HUser user = channel.find(this.user.getUsername());
+       return user.getLevel();
     }
 
     public boolean isIgnoring(HCUser user) {
