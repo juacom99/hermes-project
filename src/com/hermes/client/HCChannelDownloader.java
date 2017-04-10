@@ -143,7 +143,6 @@ public class HCChannelDownloader implements Runnable
 
                             channels.add(channel);
                             notifyAll(channel, channels.indexOf(channel));
-                           // System.out.println(channel.getName() + "(" + channel.getPublicIP().getHostAddress() + ":" + channel.getPort() + ") Added");
                             i = d.getKnownChannels().iterator();
 
                             while (i.hasNext())

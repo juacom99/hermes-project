@@ -72,7 +72,7 @@ public class IPCacheManager
 
     public LinkedList<HChannel> read() throws FileNotFoundException, IOException
     {
-        LinkedList<HChannel> channels = new LinkedList<HChannel>();
+        LinkedList<HChannel> channels = new LinkedList();
 
         InputStream is = new FileInputStream(file);
         is.skip(6);
