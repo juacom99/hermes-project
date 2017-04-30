@@ -101,7 +101,7 @@ public class EmoticonManager
         }
         return instance;
     }
-        
+    
     
     
     

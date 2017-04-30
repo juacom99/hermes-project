@@ -157,7 +157,7 @@ public class AresFormater
         {
             key = i.next();
 
-            ret = ret.replaceAll("(?i)" + key, "<img src=\"file:\\" + emoticonsFolder + EmoticonManager.getInstance().get(key) + "\"/>");
+           ret = ret.replaceAll("(?i)" + key, "<img src=\"file:\\" + emoticonsFolder + EmoticonManager.getInstance().get(key) + "\"/>");
         }
         return ret;
     }

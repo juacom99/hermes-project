@@ -77,7 +77,7 @@ public class HClient implements Runnable, ActionListener {
     private List<HIClientEvents> events;
     private Timer updateTimer;
     private boolean running;
-
+    
     public static final String CLIENT_VERSION = "нεямεѕ сℓιεит I (1.0a)";//"Ares_2.3.0.3054";
     
 
