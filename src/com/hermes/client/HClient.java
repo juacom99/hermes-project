@@ -84,6 +84,7 @@ public class HClient implements Runnable, ActionListener {
     public HClient(HCUser user) throws IOException {
         this.user = user;
         this.reader = new Thread(this);
+        this.reader.setPriority(Thread.MAX_PRIORITY);
         this.events = new ArrayList<>();
         this.updateTimer = new Timer(80000, this);
         this.running = false;
@@ -105,7 +106,10 @@ public class HClient implements Runnable, ActionListener {
 
          }
         running = true;
+        if(!reader.isAlive())
+        {
         reader.start();
+        }
         for (int i = 0; i < events.size(); i++) {
             events.get(i).onConnect(new HClientEvent());
         }

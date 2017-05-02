@@ -112,7 +112,7 @@ public class HCChannelDownloader implements Runnable
             {
                 pack = new DatagramPacket(b, b.length);
                 sock = new DatagramSocket();
-                sock.setSoTimeout(800);
+                sock.setSoTimeout(1500);
 
                 channel = toProcess.poll();
                 System.out.print("Querying "+channel.getName()+"  ( "+channel.getPublicIP()+":"+channel.getPort()+" )   ");
@@ -161,7 +161,7 @@ public class HCChannelDownloader implements Runnable
                 sock.close();
             } catch (SocketTimeoutException ex)
             {
-                System.out.println("     Timeout");
+                System.out.println("     Timeout "+ex.getCause());
             } catch (PortUnreachableException ex)
             {
                 System.out.println("     Port Unreachable "+ex.getMessage());
