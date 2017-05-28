@@ -115,7 +115,7 @@ public class HCChannelDownloader implements Runnable
                 sock.setSoTimeout(1500);
 
                 channel = toProcess.poll();
-                System.out.print("Querying "+channel.getName()+"  ( "+channel.getPublicIP()+":"+channel.getPort()+" )   ");
+               // System.out.print("Querying "+channel.getName()+"  ( "+channel.getPublicIP()+":"+channel.getPort()+" )   ");
                 sock.connect(new InetSocketAddress(channel.getPublicIP(), channel.getPort()));
                 sock.send(pack);
                 sock.receive(res);
@@ -157,17 +157,17 @@ public class HCChannelDownloader implements Runnable
                             break;
                     }
                 }
-                System.out.println("     OK");
+               // System.out.println("     OK");
                 sock.close();
             } catch (SocketTimeoutException ex)
             {
-                System.out.println("     Timeout "+ex.getCause());
+               // System.out.println("     Timeout "+ex.getCause());
             } catch (PortUnreachableException ex)
             {
-                System.out.println("     Port Unreachable "+ex.getMessage());
+               // System.out.println("     Port Unreachable "+ex.getMessage());
             } catch (IOException ex)
             {
-                System.out.println("     General excpetion");
+                //System.out.println("     General excpetion");
             }
 
         }

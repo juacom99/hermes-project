@@ -62,10 +62,10 @@ public class AresFormater
             ret = ret.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
             ret = ret.replaceAll(" ", "&nbsp;");
             ret = ret.replaceAll("    ", "&#09;");
-            ret = ret.replace(((char) 2) + "6", "" + AresFormater.BOLD_CHARACTER);
+            ret = ret.replaceAll(((char) 2) + "6", "" + AresFormater.BOLD_CHARACTER);
             ret = ret.replaceAll(((char) 2) + "7", "" + AresFormater.UNDERLINE_CHARACTER);
             ret = ret.replaceAll(((char) 2) + "9", "" + AresFormater.ITALIC_CHARACTER);
-            
+            ret=ret.replaceAll("","" + AresFormater.BOLD_CHARACTER);
             ret = foregroundReplace(ret);
             ret = backGrounddReplace(ret);            
             ret = linksReplace(ret);
@@ -121,8 +121,8 @@ public class AresFormater
 
     private String boldReplace(String str)
     {
-        String s = "(" + BOLD_CHARACTER + "(.*?)" + BOLD_CHARACTER + ")|(" + BOLD_CHARACTER + "(.*?)$)";
-        return str.replaceAll(s, "<span style='font-weight:bold;'>$0</span>");
+        String s = "((?:" + BOLD_CHARACTER + ")(.*?)" + BOLD_CHARACTER + ")|((?:" + BOLD_CHARACTER + ")(.*?)$)";
+        return str.replaceAll(s, "<b>$0</b>");
     }
 
     private String underlineReplace(String str)

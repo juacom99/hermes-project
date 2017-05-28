@@ -53,6 +53,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.SocketChannel;
@@ -77,9 +78,8 @@ public class HClient implements Runnable, ActionListener {
     private List<HIClientEvents> events;
     private Timer updateTimer;
     private boolean running;
-    
+
     public static final String CLIENT_VERSION = "нεямεѕ сℓιεит I (1.0a2)";//"Ares_2.3.0.3054";
-    
 
     public HClient(HCUser user) throws IOException {
         this.user = user;
@@ -98,24 +98,32 @@ public class HClient implements Runnable, ActionListener {
     public void connect(SocketAddress addr) throws IOException {
 
         channel = new HCChannel();
-        socket = SocketChannel.open();
-        socket.socket().connect(addr, 1000);
-        socket.configureBlocking(true);
-        while (!socket.finishConnect())
-         {
+        try {
+            socket = SocketChannel.open();
+            socket.socket().connect(addr, 1000);
+            socket.configureBlocking(true);
+            while (!socket.finishConnect()) {
 
-         }
-        running = true;
-        if(!reader.isAlive())
+            }
+            running = true;
+            if (!reader.isAlive()) {
+                reader.start();
+            }
+            for (int i = 0; i < events.size(); i++) {
+                events.get(i).onConnect(new HClientEvent());
+            }
+            P2 pkg = new P2(user.getGuid(), (short) user.getFilecount(), (short) user.getDataport(), user.getNodeIp(), (short) user.getNodePort(), user.getLinetype(), user.getUsername(), CLIENT_VERSION, user.getPrivateIp(), user.getPublicIp(), user.getBrowsable(), user.getUploads(), user.getMaxUploads(), user.getQueued(), user.getAge(), user.getGender(), user.getCountry(), user.getRegion());
+            send(pkg);
+            updateTimer.start();
+        }
+        catch(SocketTimeoutException ex)
         {
-        reader.start();
+            HClientEvent evt=new HClientEvent();
+            for( int i=0;i<events.size();i++)
+            {
+                events.get(i).onDisconnect(evt);
+            }
         }
-        for (int i = 0; i < events.size(); i++) {
-            events.get(i).onConnect(new HClientEvent());
-        }
-        P2 pkg = new P2(user.getGuid(), (short) user.getFilecount(), (short) user.getDataport(), user.getNodeIp(), (short) user.getNodePort(), user.getLinetype(), user.getUsername(), CLIENT_VERSION, user.getPrivateIp(), user.getPublicIp(), user.getBrowsable(), user.getUploads(), user.getMaxUploads(), user.getQueued(), user.getAge(), user.getGender(), user.getCountry(), user.getRegion());
-        send(pkg);
-        updateTimer.start();
 
     }
 
@@ -180,8 +188,8 @@ public class HClient implements Runnable, ActionListener {
     }
 
     public HAdminLevel getAdminLevel() {
-       HUser user = channel.find(this.user.getUsername());
-       return user.getLevel();
+        HUser user = channel.find(this.user.getUsername());
+        return user.getLevel();
     }
 
     public boolean isIgnoring(HCUser user) {
@@ -447,6 +455,10 @@ public class HClient implements Runnable, ActionListener {
             }
         } catch (IOException ex) {
             Logger.getLogger(HClient.class.getName()).log(Level.SEVERE, null, ex);
+
+            for (int i = 0; i < events.size(); i++) {
+                events.get(i).onDisconnect(new HClientEvent());
+            }
         }
 
     }
